@@ -1466,6 +1466,15 @@ h5, h6 {
    asar 实测：app.css 9465 .tree-item-self.mod-collapsible 是 folder 标记。 */
 .nav-folder-title,
 .tree-item-self.mod-collapsible {
+  font-weight: 600;
+}
+
+/* chrome 正文统一提一档：文件名、大纲和页签都保持接近默认主题的可读度。 */
+.nav-file-title-content,
+.nav-folder-title-content,
+.tree-item-self,
+.outline-item,
+.workspace-tab-header-inner-title {
   font-weight: 500;
 }
 
