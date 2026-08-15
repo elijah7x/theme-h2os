@@ -4,7 +4,7 @@
 
 > 一款几何美学的 Obsidian 亮色主题。白色画布，克制的一加红，方、圆、三角各司其职。氢 OS 停更多年，但它的设计纪律不该跟着退役——H2 OS 把这套纪律翻译到今天的书写环境里。
 
-[English](https://github.com/elijahchan2019/obsidian-h2os-theme/blob/main/README.md) · 亮色模式 · 桌面与移动端 · 无需插件
+[English](https://github.com/elijah7x/theme-h2os/blob/main/README.md) · 亮色模式 · 桌面与移动端 · 无需插件
 
 ---
 

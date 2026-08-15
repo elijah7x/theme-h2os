@@ -234,9 +234,9 @@ Opendian sidebar-debug 的真实例子：`position: absolute` 解耦、负 margi
 
 **发完 30 秒强制自检（缺一不可）：**
 ```bash
-gh api repos/elijahchan2019/obsidian-h2os-theme/releases/latest --jq '.tag_name'  # == manifest version，无 v
+gh api repos/elijah7x/theme-h2os/releases/latest --jq '.tag_name'  # == manifest version，无 v
 gh release view <版本> --json assets --jq '.assets[].name'                          # theme.css / manifest.json 在
-gh api repos/elijahchan2019/obsidian-h2os-theme/releases --jq '.[]|select(.tag_name=="<版本>")|.draft'  # 必须 false
+gh api repos/elijah7x/theme-h2os/releases --jq '.[]|select(.tag_name=="<版本>")|.draft'  # 必须 false
 ```
 > 坑：`gh release create` 传大图可能客户端超时，把 release 卡在 draft 态。若自检发现 `draft=true`，用 `gh release edit <版本> --draft=false --latest` 转正。
 

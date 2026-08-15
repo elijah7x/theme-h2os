@@ -4,7 +4,7 @@
 
 > A geometric light theme for Obsidian. A white canvas, a restrained OnePlus red, and three shapes with real jobs. HydrogenOS stopped shipping years ago — its design discipline deserved better. H2 OS translates that discipline into a modern writing environment.
 
-[中文介绍](https://github.com/elijahchan2019/obsidian-h2os-theme/blob/main/README.zh-CN.md) · Light mode · Desktop & mobile · No plugin required
+[中文介绍](https://github.com/elijah7x/theme-h2os/blob/main/README.zh-CN.md) · Light mode · Desktop & mobile · No plugin required
 
 ---
 
