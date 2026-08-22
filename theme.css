@@ -1,7 +1,7 @@
 /* ============================================================
    H2 OS — Obsidian Theme  v0.1.0-dev (Phase 0: token foundation)
    字体: Poppins · Montserrat · Source Han Sans · JetBrains Mono
-   色彩: White #FFFFFF · Gray #18181B / #52525B · Red #D14A4A
+   色彩: White #FFFFFF · Warm Gray #1C1917 / #57534E · Red #D14A4A（v1.3 暖灰纸感）
    几何: 圆(交互) · 方(内容) · 三角(签名)
    ============================================================
    Phase 0 只定义 token，不写组件。切到 Obsidian 验证裸色板对了再往上盖。
@@ -90,10 +90,12 @@ body {
      所有阴影走 token 出口，组件只 box-shadow: var(--h2-shadow-N)，
      不内联散值。
      ──────────────────────────────────────────────────────────── */
-  --h2-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.04);   /* 卡片、浮层 */
-  --h2-shadow-2: 0 4px 12px rgba(0, 0, 0, 0.06);  /* popover、菜单、notice */
-  --h2-shadow-3: 0 8px 24px rgba(0, 0, 0, 0.08);  /* modal */
-  --background-modifier-box-shadow: rgba(0, 0, 0, 0.06);
+  /* v1.3：阴影统一暖黑 rgba(28,25,23,…)（= warm Gray 900 带透明度），
+     比纯黑阴影多一层纸面温度；shadow-2/3 略加深支撑物性。 */
+  --h2-shadow-1: 0 1px 2px rgba(28, 25, 23, 0.05);   /* 卡片、浮层 */
+  --h2-shadow-2: 0 4px 16px rgba(28, 25, 23, 0.07);  /* popover、菜单、notice */
+  --h2-shadow-3: 0 12px 32px rgba(28, 25, 23, 0.10); /* modal */
+  --background-modifier-box-shadow: rgba(28, 25, 23, 0.07);
 
   /* ── 动效（与色板同级，Phase 0 定稿，不是收尾补丁） ──────────
      只 transition 具体属性，不动 layout 属性。
@@ -128,17 +130,17 @@ body.theme-light {
 
   /* ── primitive：原始色阶 ─────────────────────────────────── */
 
-  /* 中性灰阶（白底克制路线的主干） */
+  /* 中性灰阶（白底克制路线的主干） v1.3：zinc 中性灰 → stone 暖灰，纸面温度 */
   --h2-white:    #FFFFFF;
-  --h2-gray-50:  #FAFAFA;
-  --h2-gray-100: #F4F4F5;
-  --h2-gray-200: #E4E4E7;
-  --h2-gray-300: #D4D4D8;
-  --h2-gray-400: #A1A1AA;  /* 图标、禁用态（2.6:1，不可做正文） */
-  --h2-gray-500: #71717A;  /* 次要文字（4.6:1，达 AA） */
-  --h2-gray-600: #52525B;  /* 正文 */
-  --h2-gray-700: #3F3F46;
-  --h2-gray-900: #18181B;  /* 标题、主文字 */
+  --h2-gray-50:  #FAFAF9;
+  --h2-gray-100: #F5F5F4;
+  --h2-gray-200: #E7E5E4;
+  --h2-gray-300: #D6D3D1;
+  --h2-gray-400: #A8A29E;  /* 图标、禁用态（2.6:1，不可做正文） */
+  --h2-gray-500: #78716C;  /* 次要文字（4.6:1，达 AA） */
+  --h2-gray-600: #57534E;  /* 正文 */
+  --h2-gray-700: #44403C;
+  --h2-gray-900: #1C1917;  /* 标题、主文字 */
 
   /* 降饱和一加红（点缀用，不做大面积填充） */
   --h2-red-300: #E88080;   /* hover 背景 tint、轻撞色 */
@@ -177,7 +179,10 @@ body.theme-light {
   /* 签名构造线（v0.8.6，Elijah 立项）：全主题仅两条——导航栏下沿
      （横）+ 设置页左栏右沿（竖）。红 500 半透明压暗，细而不响。
      ⚠️ 红色纪律第 5 例外：构造线级红持续态，限定一横一竖各一条，
-     禁止扩散到其他分隔线。 */
+     禁止扩散到其他分隔线。
+     v1.3：横线地平线化（两端消隐 + 整体降透明度）+ active tab 短红游标
+     （28×2，句读级红导航例外同族），见 UI CHROME / v0.8.6 段。
+     ──────────────────────────────────────────────────────────── */
   --h2-line-signature: rgba(209, 74, 74, 0.7);
 
   /* ── 映射给 Obsidian 原生变量（Obsidian 内部 CSS 读这些渲染） ── */
@@ -257,9 +262,9 @@ body.theme-light {
   /* 导航：hover/active 用灰阶 tint（不是红——红色纪律：持续态/大面积不用红）。
      用相对透明度 rgba(0,0,0,N)，白底灰底都成立（避免 Gray 100 同色叠同色隐形）。
      灰阶 tint 对比天然弱于红 tint，active 靠 500 字重补辨识度。 */
-  --nav-item-background-hover:    rgba(0, 0, 0, 0.04);
-  --nav-item-background-active:   rgba(0, 0, 0, 0.07);
-  --nav-item-background-selected: rgba(0, 0, 0, 0.07);
+  --nav-item-background-hover:    rgba(28, 25, 23, 0.045);
+  --nav-item-background-active:   rgba(28, 25, 23, 0.08);
+  --nav-item-background-selected: rgba(28, 25, 23, 0.08);
   --nav-item-color:               var(--h2-text-muted);
   --nav-item-color-hover:         var(--h2-text);
   --nav-item-color-active:        var(--h2-accent);
@@ -495,6 +500,30 @@ body.theme-light {
 
 
 /* ════════════════════════════════════════════════════════════
+   v1.3 · 纸感材质层（Elijah 拍板激进重塑）
+   全局固定噪点：feTurbulence 灰噪，3% 级透明度，破除数字平涂感——
+   白纸读成"高级印刷纸"而非屏幕白。fixed + pointer-events:none，
+   静态贴图合成一次，无滚动重绘税。z-index 置顶是必要条件：
+   app 各层都是不透明背景，噪点低于内容层会被完全盖住。
+   ════════════════════════════════════════════════════════════ */
+body.theme-light::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.6 0'/></filter><rect width='240' height='240' filter='url(%23n)'/></svg>");
+  background-size: 240px 240px;
+}
+
+/* 打印不产噪点（纸质输出自带材质） */
+@media print {
+  body.theme-light::after { display: none; }
+}
+
+
+/* ════════════════════════════════════════════════════════════
    兜底：reduced-motion 时动效归零（动效纪律的兜底机制）
    ════════════════════════════════════════════════════════════ */
 
@@ -573,7 +602,7 @@ body.theme-light {
    ⚠️ 这个规则由 Obsidian 编辑器设置里的"高亮当前行"开关控制，
       用户关了开关就不渲染 .cm-activeLine，本规则自动失效（无害）。 */
 .markdown-source-view.mod-cm6 .cm-activeLine {
-  background-color: rgba(0, 0, 0, 0.025);
+  background-color: rgba(28, 25, 23, 0.028);
 }
 
 /* 段落间距：阅读模式和 Live Preview 统一 */
@@ -781,6 +810,14 @@ h5, h6 {
   color: var(--h2-text-faint);
   font-size: 0.75rem;   /* 12px，4px 网格 */
   font-family: var(--font-interface-theme);
+}
+
+/* ── 图片（v1.3.2，方=结构）──────────────────────────────────
+   裸图贴白底读作"外来物"。1px hairline 收边 + 直角，让图片
+   与表格外框、嵌入框同语言——图也是结构件。 */
+.markdown-preview-view img {
+  border: 1px solid var(--h2-border);
+  border-radius: 0;
 }
 
 /* ── D4 Prism 语法高亮（阅读模式）─────────────────────────────
@@ -1386,9 +1423,12 @@ h5, h6 {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
 }
 
-/* 设置项 active 状态：用沉浸底色，不强行加灰底卡片（第三方插件兼容） */
+/* 设置项 active 状态：用沉浸底色，不强行加灰底卡片（第三方插件兼容）。
+   v1.3.4（Elijah 实测）：Gray-100 在 modal 白底上近乎隐形，左栏读成
+   "全部置灰"。换 --nav-item-background-active（0.08 暖灰 tint），
+   选中行有可辨的底，红字 + 500 字重不变。 */
 .vertical-tab-nav-item.is-active {
-  background: var(--h2-gray-100);
+  background: var(--nav-item-background-active);
   color: var(--h2-accent);
   font-weight: 500;
 }
@@ -1436,6 +1476,24 @@ h5, h6 {
   border-radius: var(--radius-s);
 }
 
+/* v1.3.4 红字渐隐渐变推广到文件树/大纲 active（Elijah 要求同语汇）。
+   asar 实锤（Obsidian 1.13.7）：文件树与大纲共用 tree 组件，
+   active 行 = .tree-item-self.is-active，文字在 .tree-item-inner
+   （旧 .outline-item 类已从 app.css 消失，下方大纲旧规则在 1.13.7
+   不再命中，保留仅为旧版本兜底）。
+   渐变只挂文字 span，折叠箭头 svg 走 currentColor 不受影响。 */
+.tree-item-self.is-active .tree-item-inner,
+.nav-file-title.is-active .nav-file-title-content,
+.nav-folder-title.is-active .nav-folder-title-content {
+  background: linear-gradient(to right,
+    var(--h2-accent-hover) 0%,
+    var(--h2-accent) 55%,
+    rgba(209, 74, 74, 0.62) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 /* 红点导航语（v0.3.1）：active 文件同款句读级红点，与 active tab 呼应 */
 .nav-file-title.is-active .nav-file-title-content::before {
   display: none;
@@ -1453,7 +1511,7 @@ h5, h6 {
 .nav-folder-title:hover,
 .tree-item-self:hover,
 .outline-item:hover {
-  background: var(--nav-item-background-hover);   /* rgba(0,0,0,0.04) 灰阶（v0.7.3 修正过时注释） */
+  background: var(--nav-item-background-hover);   /* rgba(28,25,23,0.045) 灰阶（v0.7.3 修正过时注释） */
   border-radius: var(--radius-s);
   transition: var(--h2-transition-color);
 }
@@ -1525,6 +1583,10 @@ h5, h6 {
   padding-inline: 12px;
 }
 
+/* active tab：灰底 + 红字。红环 v1.3.3 试过即退役（Elijah 实拍否掉）。
+   v1.3.4 红字渐隐渐变（Elijah 提案）：深红起笔、中段正红、末端渐隐
+   到 62%——"墨迹渐干"的收尾，面积只限标题文字本身，克制不抢阅读。
+   background-clip: text 实现；fallback 色先声明，不支持的环境退回纯红字。 */
 .workspace .mod-root .workspace-tabs:not(.mod-stacked) .workspace-tab-header.is-active .workspace-tab-header-inner {
   background-color: var(--nav-item-background-active);
   box-shadow: none;
@@ -1532,6 +1594,19 @@ h5, h6 {
 
 .workspace .mod-root .workspace-tab-header.is-active .workspace-tab-header-inner-title {
   color: var(--h2-accent);
+  background: linear-gradient(to right,
+    var(--h2-accent-hover) 0%,
+    var(--h2-accent) 55%,
+    rgba(209, 74, 74, 0.62) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* v1.3.2 非 active tab hover：极淡灰底 pill 浮现（与 active 同构弱一档），
+   tab 带有触感。持续态用灰阶不用红（红色纪律）。 */
+.workspace .mod-root .workspace-tabs:not(.mod-stacked) .workspace-tab-header:not(.is-active):hover .workspace-tab-header-inner {
+  background-color: var(--nav-item-background-hover);
 }
 
 /* 原生 container-inner 有 6px 上边距，会让自定义 32px tab 视觉下沉。 */
@@ -1604,7 +1679,7 @@ h5, h6 {
   /* v0.8.4：方 → 空心倒三角（Elijah 拍板）。红点（你在这里）+
      倒三角（钉入）="钉在此处"。空心描边形态小尺寸立得住
      （初版实心倒三角失败是因为无内部细节，非形状本身问题）。 */
-  background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M3.5 5.5 13.5 5.5 8.5 13Z' fill='none' stroke='%2371717A' stroke-width='1.75' stroke-linejoin='round'/><circle cx='4.5' cy='4.5' r='3.25' fill='%23D14A4A'/></svg>") no-repeat center / contain;
+  background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M3.5 5.5 13.5 5.5 8.5 13Z' fill='none' stroke='%2378716C' stroke-width='1.75' stroke-linejoin='round'/><circle cx='4.5' cy='4.5' r='3.25' fill='%23D14A4A'/></svg>") no-repeat center / contain;
   opacity: 0.85;
   animation: h2-emerge 150ms var(--h2-ease-signature);
   transition: opacity var(--h2-duration-fast) var(--h2-ease);
@@ -1642,52 +1717,63 @@ h5, h6 {
   position: relative;
 }
 
-/* 构图：两个伪元素画三件套。
-   ::before 承担 方 + 圆（多重背景），::after 承担 三角（clip-path，
-   签名元素单独一层放最前）。固定尺寸容器居中，不随 pane 缩放变形。 */
-/* v0.3.1 红色胆量校准（Elijah 拍板）：构图去居中改非对称
-   （H2OS 教义"打破对称"，官方页第 3 帧），三角换红——
-   学官方页首图的大面积红色几何胆量。空状态是用户主动停留的
-   封面，不是被迫常驻的 chrome，红色纪律的第二个例外场景。 */
+/* v1.3 蓝图构造线：网格铺满空画布，径向 mask 让网格只在氢徽
+   周围显形——把 feature-artboard 的 "A working diagram" 工程图
+   气质搬进日常。rgba(28,25,23,0.045) = 暖黑 4.5%，印刷网纹级。
+   v1.3.2（Elijah 实测）：32px 密网格 + 大光晕让散线在空处读作
+   "划痕"。间距放大到 64px、mask 收紧贴住构图——稀疏且只围绕
+   氢徽的线才读作蓝图。 */
+.workspace-leaf-content[data-type="empty"] .empty-state-container {
+  background-image:
+    linear-gradient(rgba(28, 25, 23, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(28, 25, 23, 0.045) 1px, transparent 1px);
+  background-size: 64px 64px;
+  background-position: center;
+  -webkit-mask-image: radial-gradient(ellipse 30% 34% at 34% 35%, black 25%, transparent 78%);
+  mask-image: radial-gradient(ellipse 30% 34% at 34% 35%, black 25%, transparent 78%);
+}
+
+/* ── 氢徽·纪念碑版（v1.3，Elijah 拍板激进重塑）─────────────────
+   从 240×180 小构图放大到 340×360 纪念碑级，空状态从"小 logo"
+   升格为"第一屏装置"。关系规则仍锁死：① 面积序 方>圆>三角
+   （232² > π·84² > 148×128/2）；② 三角尖端 (186,112) 落在方圆
+   交叠区 x[140,232] y[108,192] 内；③ 唯一红只有三角。
+   新增层间投影：方圆共层一道暖黑 drop-shadow，红三角单独一道
+   红色投影——"方托着圆、圆上冒出三角"的雕塑感。
+   v1.3.1：方圆各降一档（100→200 / 200→300），白底上方形不再隐形。 */
 .workspace-leaf-content[data-type="empty"] .empty-state::before {
   content: '';
   position: absolute;
-  left: 38%;
-  top: 32%;
+  left: 34%;
+  top: 34%;
   translate: -50% -50%;
-  width: 240px;
-  height: 180px;
+  width: 340px;
+  height: 360px;
   pointer-events: none;
-  /* ── 氢徽·完整版（v0.6 关系锁定）─────────────────────────
-     故事：方是结构（最大最静，垫底）、圆是日常（居其上，仍灰）、
-     三角是灵感（最小、唯一红，尖端从方与圆的交叠处冒出来）。
-     关系规则（任何尺寸重绘必守）：
-       ① 面积序 方>圆>三角；② 三角尖端处于方圆交叠区（画眼）；
-       ③ 唯一红：只有三角红，方圆永远灰阶。
-     本版几何：方 132² @(0,48)；圆 88 @(112,0)（左移形成真实
-     交叠区 x[112,132] y[48,88]——旧版方圆间有 16px 空隙，
-     "交叠处冒尖"在几何上不成立，故事的画眼是这次锁上的）。 */
+  filter: drop-shadow(0 16px 32px rgba(28, 25, 23, 0.08));
   background:
-    /* 圆：Gray 200，中景，与方交叠 */
-    radial-gradient(circle closest-side, var(--h2-gray-200) 99%, transparent 100%)
-      no-repeat 112px 0 / 88px 88px,
-    /* 方：Gray 100，背景层，左下，最大 */
-    linear-gradient(var(--h2-gray-100), var(--h2-gray-100))
-      no-repeat 0 48px / 132px 132px;
+    /* 圆：Gray 300，中景，与方交叠 */
+    radial-gradient(circle closest-side, var(--h2-gray-300) 99%, transparent 100%)
+      no-repeat 140px 24px / 168px 168px,
+    /* 方：Gray 200，背景层，左下，最大 */
+    linear-gradient(var(--h2-gray-200), var(--h2-gray-200))
+      no-repeat 0 108px / 232px 232px;
 }
 
+/* 三角：前景唯一红，"冒尖"本体。红色 drop-shadow 让尖端悬浮在
+   方圆交叠区之上。translate 偏移 = 三角 top-left (112,112)
+   相对容器中心 (170,180) 的 delta (-58,-68)。 */
 .workspace-leaf-content[data-type="empty"] .empty-state::after {
   content: '';
   position: absolute;
-  left: 38%;
-  top: 32%;
-  /* 尖端精确落点：构图坐标 (126,58)，在方圆交叠区 x[112,132] y[48,88] 内。
-     换算：top-left = 锚点 + (6-48, 10-42) → translate 偏移 (6,10)。 */
-  translate: calc(-50% + 6px) calc(-50% + 10px);
-  width: 96px;
-  height: 84px;
+  left: 34%;
+  top: 34%;
+  translate: calc(-50% - 58px) calc(-50% - 68px);
+  width: 148px;
+  height: 128px;
   pointer-events: none;
-  background: var(--h2-accent);   /* 三角：前景，唯一红——"冒尖"本体 */
+  filter: drop-shadow(0 8px 16px rgba(209, 74, 74, 0.30));
+  background: var(--h2-accent);
   clip-path: polygon(50% 0, 0 100%, 100% 100%);
 }
 
@@ -1698,7 +1784,18 @@ h5, h6 {
 }
 
 .workspace-leaf-content[data-type="empty"] .empty-state-action-list {
-  margin-top: 220px;   /* 给上方构图让位 */
+  margin-top: 420px;   /* 给纪念碑级构图让位 */
+}
+
+/* v1.3 纯封面：桌面端操作链接默认隐藏，hover/focus 浮现——
+   空状态是封面不是菜单。移动端无 hover 不适用，保持常显。 */
+body:not(.is-mobile) .workspace-leaf-content[data-type="empty"] .empty-state-action-list {
+  opacity: 0;
+  transition: opacity var(--h2-duration-base) var(--h2-ease);
+}
+body:not(.is-mobile) .workspace-leaf-content[data-type="empty"] .empty-state:hover .empty-state-action-list,
+body:not(.is-mobile) .workspace-leaf-content[data-type="empty"] .empty-state:focus-within .empty-state-action-list {
+  opacity: 1;
 }
 
 .workspace-leaf-content[data-type="empty"] .empty-state-action {
@@ -1867,8 +1964,22 @@ h5, h6 {
   display: none !important;
 }
 
+/* v1.3.4 选中项增强（Elijah 实测）：字重 500 在 PingFang 上肉眼无差，
+   提到 600；标题文字套 tab 同款红字渐隐渐变（background-clip: text），
+   渐变只挂在 title span 上，不碰 chevron 图标色。 */
 .modal.mod-settings .vertical-tab-nav-item.is-active {
   color: var(--h2-accent);
+  font-weight: 600;
+}
+
+.modal.mod-settings .vertical-tab-nav-item.is-active .vertical-tab-nav-item-title {
+  background: linear-gradient(to right,
+    var(--h2-accent-hover) 0%,
+    var(--h2-accent) 55%,
+    rgba(209, 74, 74, 0.62) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 
@@ -2266,7 +2377,7 @@ body:not(.is-mobile) .workspace-split.mod-left-split .workspace-sidedock-vault-p
      获得功能叙事（当前值落点），仍是句读级一红。
      "红点系"构词法升级：灰几何体（名词）+ 红点（动作/落点）。
      几何：三轨 x[3,13] y=4.5/8/11.5，描边 1.75 圆帽；滑块 r2.25 @(10.5,8)。 */
-  background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><g stroke='%2371717A' stroke-width='1.75' stroke-linecap='round'><line x1='3' y1='4.5' x2='13' y2='4.5'/><line x1='3' y1='8' x2='13' y2='8'/><line x1='3' y1='11.5' x2='13' y2='11.5'/></g><circle cx='10.5' cy='8' r='2.25' fill='%23D14A4A' stroke='%23FAFAFA' stroke-width='1'/></svg>") no-repeat center / 18px 18px;   /* v0.8.8 三版：16→18px（Elijah："小气了点"） */
+  background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><g stroke='%2378716C' stroke-width='1.75' stroke-linecap='round'><line x1='3' y1='4.5' x2='13' y2='4.5'/><line x1='3' y1='8' x2='13' y2='8'/><line x1='3' y1='11.5' x2='13' y2='11.5'/></g><circle cx='10.5' cy='8' r='2.25' fill='%23D14A4A' stroke='%23FAFAF9' stroke-width='1'/></svg>") no-repeat center / 18px 18px;   /* v0.8.8 三版：16→18px（Elijah："小气了点"） */
   opacity: 0.85;
   transition: opacity var(--h2-duration-fast) var(--h2-ease);
 }
@@ -2285,7 +2396,7 @@ body:not(.is-mobile) .workspace-split.mod-left-split .workspace-sidedock-vault-p
 
 /* ── 任务三：设置弹窗标题旁徽记版（保留，已验收）────────────── */
 .modal.mod-settings .modal-title {
-  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><rect y='11' width='13' height='13' fill='%23E4E4E7'/><circle cx='14' cy='8' r='5' fill='%23D4D4D8'/><path d='M11 11.5 16 20.5 6 20.5Z' fill='%23D14A4A'/></svg>");
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><rect y='11' width='13' height='13' fill='%23E7E5E4'/><circle cx='14' cy='8' r='5' fill='%23D6D3D1'/><path d='M11 11.5 16 20.5 6 20.5Z' fill='%23D14A4A'/></svg>");
   background-repeat: no-repeat;
   background-position: left center;
   background-size: 24px;
@@ -2954,6 +3065,13 @@ body {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+/* v1.3.2 悬浮呼吸：氢徽入场后的 idle 浮动（±4px 内，alternate 往返）。
+   空状态从"静态封面"变"活的装置"。延迟起播避开入场编舞；
+   reduced-motion 由文件头兜底（两伪元素 animation: none）。 */
+@keyframes h2-float {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-4px); }
+}
 
 /* ── ① 完成的瞬间：checkbox 墨滴扩散 ─────────────────────────
    red 填充从圆心向外扩散（radial-gradient + background-size 动画），
@@ -3002,10 +3120,12 @@ body {
 /* v0.8.2：升 grand 时长 + 三角延迟 160→280ms（Elijah 反馈原版偏快，
    两拍之间要有可感知的呼吸）。 */
 .workspace-leaf-content[data-type="empty"] .empty-state::before {
-  animation: h2-badge-in var(--h2-duration-grand) var(--h2-ease-signature) backwards;
+  animation: h2-badge-in var(--h2-duration-grand) var(--h2-ease-signature) backwards,
+             h2-float 6s var(--h2-ease) 1.2s infinite alternate;   /* v1.3.2 idle 呼吸：方+圆 6s 慢拍 */
 }
 .workspace-leaf-content[data-type="empty"] .empty-state::after {
-  animation: h2-badge-in var(--h2-duration-grand) var(--h2-ease-signature) 280ms backwards;
+  animation: h2-badge-in var(--h2-duration-grand) var(--h2-ease-signature) 280ms backwards,
+             h2-float 4.5s var(--h2-ease) 1.6s infinite alternate; /* 三角 4.5s 快半拍，两层错频 */
 }
 
 /* ════════════════════════════════════════════════════════════
@@ -3203,7 +3323,19 @@ body:not(.is-mobile) .workspace::after {
   right: 0;
   top: calc(var(--h2-paper-gap) + var(--header-height));
   height: 1.5px;
-  background: var(--h2-line-signature);
+  /* v1.3 地平线化（A 方案）：两端 15% 渐变消隐 + 整体 0.55 透明度——
+     从"横梁"退为"地平线"，不再隔绝上下。刷入动画不变。
+     v1.3.2：-8px 补偿收回（Elijah 实测：线贴住悬浮 pill 带反而互相
+     干涉，"线上悬浮带、线下画布"的间距才是对的）；红游标同步退役，
+     active 信号改由 pill 红环承担（见 UI CHROME tabs 段）。 */
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    var(--h2-line-signature) 15%,
+    var(--h2-line-signature) 85%,
+    transparent 100%
+  );
+  opacity: 0.55;
   pointer-events: none;
   z-index: 10;
   transform-origin: left center;
@@ -3211,10 +3343,18 @@ body:not(.is-mobile) .workspace::after {
 }
 
 /* ── 设置页左栏右沿签名竖线 ──────────────────────────────────
-   替换设置 modal 侧栏与内容区之间的灰竖线。打开设置瞬间从上刷下。 */
+   替换设置 modal 侧栏与内容区之间的灰竖线。打开设置瞬间从上刷下。
+   v1.3.1：竖线同步地平线化（上下 10% 消隐 + 0.55 透明度），与横线同语言。 */
 .modal.mod-settings .vertical-tab-header {
   border-right: none;
-  background-image: linear-gradient(var(--h2-line-signature), var(--h2-line-signature));
+  background-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    var(--h2-line-signature) 10%,
+    var(--h2-line-signature) 90%,
+    transparent 100%
+  );
+  opacity: 0.55;
   background-repeat: no-repeat;
   background-position: right top;
   background-size: 1.5px 100%;
@@ -3271,7 +3411,7 @@ body {
 }
 .tooltip {
   border-radius: 0;
-  box-shadow: 0 2px 8px rgba(24, 24, 27, 0.15);
+  box-shadow: 0 2px 8px rgba(28, 25, 23, 0.15);
   font-weight: 500;
   letter-spacing: 0.01em;
   padding: 0.25rem 0.5rem;      /* 4px 8px，4px 网格 */

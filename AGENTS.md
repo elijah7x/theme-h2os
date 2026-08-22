@@ -194,6 +194,8 @@ Opendian sidebar-debug 的真实例子：`position: absolute` 解耦、负 margi
 - **动画只动 transform 和 opacity**，绝不动 layout 属性（重排掉帧）。
 - **色板走 token，别在组件里散写魔法色值。** 改色只动 `--h2-*`，Obsidian 原生变量层自动跟。
 - **间距落在 4px 网格**，禁止孤儿值。这是现代感的来源。
+- **v1.3 纸感材质层（Elijah 拍板激进重塑）**：中性灰阶从 zinc 换 stone 暖灰系；全局 feTurbulence 噪点覆盖层（2% 级、fixed、pointer-events:none、打印隐藏）；阴影 token 统一暖黑 rgba(28,25,23,…)。目标是"白纸读成高级印刷纸"。
+- **签名构造线 v1.3 地平线化**：横线两端 15% 消隐 + 整体 0.55 透明度，从"横梁"退为"地平线"；新增 active tab 短红游标（28×2 背景画法，句读级红导航例外同族）。空状态氢徽纪念碑化（340×360 + 层间投影 + 蓝图网格 + 桌面端操作 hover 浮现）。（v1.3.1：横线上移 8px 贴住 tab 栏下沿并与红游标相接；竖线同款消隐；噪点 0.06；氢徽方圆降 200/300 档；蓝图网格 5%）（v1.3.2：游标改 28×4 骑跨地平线（后被 v1.3.3 红环取代）；网格 64px 稀疏化 + mask 收紧；氢徽 idle 呼吸 h2-float 6s/4.5s 错频；图片 hairline 收边归入"方"；非 active tab hover 灰底 pill）（v1.3.3：横线 -8px 收回、线回原位与悬浮带保持距离；红游标退役——"线与 pill 间夹游离零件"两版均败）（v1.3.4：pill 红环试过即退役（Elijah 否掉），active tab 定稿为灰底 + 红字渐隐渐变（background-clip:text，Red 600 起 → Red 500 → 末端 62% 隐，面积只限文字）；设置页左栏选中项 Gray-100 → 0.08 暖灰 tint 增强可辨度；左栏选中项字重 500→600（PingFang 上 500 肉眼无差）+ title 套同款红字渐隐渐变）（v1.3.5：红字渐隐渐变推广到文件树/大纲 active 项文字——1.13.7 起大纲并入 tree 组件，`.outline-item` 已失效，主题里仅留作旧版本兜底）
 
 ---
 
