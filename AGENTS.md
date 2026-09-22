@@ -73,10 +73,10 @@ Obsidian theme. Single-file CSS, no build step. Aesthetic: **H2OS 现代化几�
 
 ## 可视化验证回路
 
-DEV_VAULT 通过 symlink 把本主题挂进 `../DEV_VAULT/.obsidian/themes/H2 OS`。
+DEV_VAULT 通过 symlink 把本主题挂进 `../../DEV_VAULT/.obsidian/themes/H2 OS`。
 改完 `theme.css` 后：
 
-1. 在 `../DEV_VAULT/.obsidian/appearance.json` 把 `cssTheme` 切到 `H2 OS`，然后 reload（`Cmd+R`）或外观设置切换主题。
+1. 在 `../../DEV_VAULT/.obsidian/appearance.json` 把 `cssTheme` 切到 `H2 OS`，然后 reload（`Cmd+R`）或外观设置切换主题。
 2. 用测试文档对照（待建：表格 / callout / checkbox / 几何语法测试.md）。
 3. 桌面截图比对（Electron，用系统截图）。
 4. 验收时按主文档 Phase 1/2 验收标准检查（hairline 一致性、4px 网格、遮色层级、辨识度测试）。
