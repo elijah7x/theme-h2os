@@ -48,6 +48,11 @@ jobs:
         id: meta
         run: |
           TAG="${GITHUB_REF#refs/tags/}"
+          # Charset gate: TAG later reaches jq filters and gh arguments.
+          if [[ ! "$TAG" =~ ^[0-9A-Za-z._-]+$ ]]; then
+            echo "::error::Tag contains unexpected characters"
+            exit 1
+          fi
           VERSION=$(jq -r '.version' manifest.json)
           NAME=$(jq -r '.name' manifest.json)
           echo "tag=$TAG"        >> "$GITHUB_OUTPUT"
@@ -60,23 +65,30 @@ jobs:
       - name: Validate tag has no `v` prefix
         # Folio's de-index incident: a `v`-prefixed tag broke Obsidian's version lookup.
         if: startsWith(steps.meta.outputs.tag, 'v') || startsWith(steps.meta.outputs.tag, 'V')
+        env:
+          TAG: ${{ steps.meta.outputs.tag }}
         run: |
-          echo "::error::Tag '${{ steps.meta.outputs.tag }}' has a 'v' prefix. Obsidian matches the release tag to manifest.version verbatim — a 'v' prefix causes 'no GitHub release with that version'. Re-tag without the prefix."
+          echo "::error::Tag '$TAG' has a 'v' prefix. Obsidian matches the release tag to manifest.version verbatim — a 'v' prefix causes 'no GitHub release with that version'. Re-tag without the prefix."
           exit 1
 
       - name: Validate tag == manifest.version
         # The single most common release failure: tag and version drift.
         if: steps.meta.outputs.tag != steps.meta.outputs.version
+        env:
+          TAG: ${{ steps.meta.outputs.tag }}
+          VERSION: ${{ steps.meta.outputs.version }}
         run: |
-          echo "::error::Tag '${{ steps.meta.outputs.tag }}' != manifest.version '${{ steps.meta.outputs.version }}'. They must be identical (Obsidian looks up the release by the exact version string)."
+          echo "::error::Tag '$TAG' != manifest.version '$VERSION'. They must be identical (Obsidian looks up the release by the exact version string)."
           exit 1
 
       - name: Validate manifest name is "H2 OS"
         # Obsidian review reads the manifest at the tagged commit. If name ≠ "H2 OS"
         # the release is rejected and the theme is pulled from the directory until fixed.
         if: steps.meta.outputs.name != 'H2 OS'
+        env:
+          NAME: ${{ steps.meta.outputs.name }}
         run: |
-          echo "::error::manifest.json name is '${{ steps.meta.outputs.name }}', must be 'H2 OS'. Obsidian review reads the manifest at the tagged commit and rejects mismatches."
+          echo "::error::manifest.json name is '$NAME', must be 'H2 OS'. Obsidian review reads the manifest at the tagged commit and rejects mismatches."
           exit 1
 
       - name: Validate theme.css has no external network resources
@@ -104,9 +116,11 @@ jobs:
       #    in the repo but never enter the release.
       # ──────────────────────────────────────────────────────────────
       - name: Build release notes (from commits since last release)
+        env:
+          TAG: ${{ steps.meta.outputs.tag }}
         run: |
           LAST_TAG=$(gh release list --repo "$GITHUB_REPOSITORY" --limit 1 --json tagName --jq '.[0].tagName' || true)
-          if [ -n "$LAST_TAG" ] && [ "$LAST_TAG" != "${{ steps.meta.outputs.tag }}" ]; then
+          if [ -n "$LAST_TAG" ] && [ "$LAST_TAG" != "$TAG" ]; then
             NOTES=$(git log --pretty=format:'- %s' "${LAST_TAG}..HEAD" 2>/dev/null | head -50)
           else
             NOTES=$(git log --pretty=format:'- %s' -5)
@@ -121,6 +135,7 @@ jobs:
       - name: Create GitHub Release (latest, non-draft)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.meta.outputs.tag }}
         run: |
           # Whitelist of assets to attach. Only existing files are included.
           ASSETS=()
@@ -128,9 +143,9 @@ jobs:
             [ -f "$f" ] && ASSETS+=("$f")
           done
 
-          gh release create "${{ steps.meta.outputs.tag }}" \
+          gh release create "$TAG" \
             --latest \
-            --title "${{ steps.meta.outputs.tag }}" \
+            --title "$TAG" \
             --notes "$RELEASE_NOTES" \
             "${ASSETS[@]}"
 
@@ -141,20 +156,20 @@ jobs:
       - name: Self-check — tag, assets, draft status (with retry for API eventual consistency)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.meta.outputs.tag }}
         run: |
-          TAG="${{ steps.meta.outputs.tag }}"
-
           # GitHub's APIs for /releases/latest, draft status, and asset indexing are
           # eventually-consistent: a freshly-created release can read back as draft=true
           # or as not-yet-Latest for a few seconds. Poll with backoff rather than failing
           # on the first transient mismatch. Genuine failures persist across all attempts.
 
           poll_until() {
-            # Args: label  expected_value  command_to_eval
-            local label="$1" expected="$2" cmd="$3"
+            # Args: label  expected_value  command [args...]  (run as argv, never eval'd)
+            local label="$1" expected="$2"
+            shift 2
             for attempt in 1 2 3 4 5 6 7 8; do
               local actual
-              actual=$(eval "$cmd" 2>/dev/null || echo "")
+              actual=$("$@" 2>/dev/null || echo "")
               if [ "$actual" = "$expected" ]; then
                 echo "  $label: '$actual' ✓"
                 return 0
@@ -168,7 +183,7 @@ jobs:
 
           echo "=== Check 1: latest release tag == $TAG ==="
           poll_until "latest-tag" "$TAG" \
-            'gh api "repos/$GITHUB_REPOSITORY/releases/latest" --jq ".tag_name"'
+            gh api "repos/$GITHUB_REPOSITORY/releases/latest" --jq ".tag_name"
 
           echo "=== Check 2: required assets present (theme.css + manifest.json) ==="
           # Returns "ok" only when both required assets are in the release; "" otherwise.
@@ -180,11 +195,14 @@ jobs:
             done
             echo "ok"
           }
-          poll_until "required-assets" "ok" 'assets_ok'
+          poll_until "required-assets" "ok" assets_ok
 
           echo "=== Check 3: not a draft ==="
-          poll_until "draft=false" "false" \
-            'gh api "repos/$GITHUB_REPOSITORY/releases" --jq ".[]|select(.tag_name==\"$TAG\")|.draft"'
+          # TAG passed the charset gate in the meta step, so it cannot break out of the jq string.
+          draft_of_tag() {
+            gh api "repos/$GITHUB_REPOSITORY/releases" --jq ".[]|select(.tag_name==\"$TAG\")|.draft"
+          }
+          poll_until "draft=false" "false" draft_of_tag
 
           echo ""
           echo "All release-compliance checks passed."
