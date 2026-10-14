@@ -4,8 +4,8 @@ Obsidian theme. Single-file CSS, no build step. Aesthetic: **H2OS 现代化几�
 — 白底、降饱和一加红点缀、圆/三角/方几何语法、氢视窗签名。基调是"生活化、克制、
 有辨识度"，2026 年精度重做的执行层，不是 2015 年 MD 旧皮肤。
 
-完整设计文档：`/Users/elijah-air/Obsidian/Uranus/1 Projects/H2 OS/H2 OS 主题介绍.md`。
-与本文件冲突时以主文档为准。
+完整设计文档（主文档）在作者本地知识库，不随仓库发布。
+与本文件冲突时以主文档为准。宣传素材放在仓库外的上级目录 `../promo/`，不进本仓库。
 
 ---
 
@@ -64,7 +64,7 @@ Obsidian theme. Single-file CSS, no build step. Aesthetic: **H2OS 现代化几�
       # 然后挖选择器
       grep -oE '\.vertical-tab[a-z-]*' /tmp/obs-asar/app.css | sort -u
       ```
-    - **路 B（路 A 看不准时，找 Elijah）**：少数东西 asar 查不准——某个类只在特定交互瞬间挂上（hover 中、拖拽中、运行时 JS 注入）。把问题列清楚（"选中 X 元素，告诉我 Elements 面板里的类名"），Elijah `Cmd+Opt+I` 截图或复制过来。
+    - **路 B（路 A 看不准时，找作者）**：少数东西 asar 查不准——某个类只在特定交互瞬间挂上（hover 中、拖拽中、运行时 JS 注入）。把问题列清楚（"选中 X 元素，告诉我 Elements 面板里的类名"），作者 `Cmd+Opt+I` 截图或复制过来。
     - **路 C（只有 GUI 权限的人能走）**：`Cmd+Opt+I` 自己看。agent 走不了这条路。
 
     这条规矩是为杜绝"隔着截图猜 DOM"的撞墙循环。Phase 4 验 `data-type="empty"`、v0.4 设置页/控件选择器全部走路 A 验过。
@@ -73,10 +73,10 @@ Obsidian theme. Single-file CSS, no build step. Aesthetic: **H2OS 现代化几�
 
 ## 可视化验证回路
 
-DEV_VAULT 通过 symlink 把本主题挂进 `../../DEV_VAULT/.obsidian/themes/H2 OS`。
+DEV_VAULT 通过 symlink 把本主题挂进 `../../../DEV_VAULT/.obsidian/themes/H2 OS`。
 改完 `theme.css` 后：
 
-1. 在 `../../DEV_VAULT/.obsidian/appearance.json` 把 `cssTheme` 切到 `H2 OS`，然后 reload（`Cmd+R`）或外观设置切换主题。
+1. 在 `../../../DEV_VAULT/.obsidian/appearance.json` 把 `cssTheme` 切到 `H2 OS`，然后 reload（`Cmd+R`）或外观设置切换主题。
 2. 用测试文档对照（待建：表格 / callout / checkbox / 几何语法测试.md）。
 3. 桌面截图比对（Electron，用系统截图）。
 4. 验收时按主文档 Phase 1/2 验收标准检查（hairline 一致性、4px 网格、遮色层级、辨识度测试）。
@@ -194,8 +194,8 @@ Opendian sidebar-debug 的真实例子：`position: absolute` 解耦、负 margi
 - **动画只动 transform 和 opacity**，绝不动 layout 属性（重排掉帧）。
 - **色板走 token，别在组件里散写魔法色值。** 改色只动 `--h2-*`，Obsidian 原生变量层自动跟。
 - **间距落在 4px 网格**，禁止孤儿值。这是现代感的来源。
-- **v1.3 纸感材质层（Elijah 拍板激进重塑）**：中性灰阶从 zinc 换 stone 暖灰系；全局 feTurbulence 噪点覆盖层（2% 级、fixed、pointer-events:none、打印隐藏）；阴影 token 统一暖黑 rgba(28,25,23,…)。目标是"白纸读成高级印刷纸"。
-- **签名构造线 v1.3 地平线化**：横线两端 15% 消隐 + 整体 0.55 透明度，从"横梁"退为"地平线"；新增 active tab 短红游标（28×2 背景画法，句读级红导航例外同族）。空状态氢徽纪念碑化（340×360 + 层间投影 + 蓝图网格 + 桌面端操作 hover 浮现）。（v1.3.1：横线上移 8px 贴住 tab 栏下沿并与红游标相接；竖线同款消隐；噪点 0.06；氢徽方圆降 200/300 档；蓝图网格 5%）（v1.3.2：游标改 28×4 骑跨地平线（后被 v1.3.3 红环取代）；网格 64px 稀疏化 + mask 收紧；氢徽 idle 呼吸 h2-float 6s/4.5s 错频；图片 hairline 收边归入"方"；非 active tab hover 灰底 pill）（v1.3.3：横线 -8px 收回、线回原位与悬浮带保持距离；红游标退役——"线与 pill 间夹游离零件"两版均败）（v1.3.4：pill 红环试过即退役（Elijah 否掉），active tab 定稿为灰底 + 红字渐隐渐变（background-clip:text，Red 600 起 → Red 500 → 末端 62% 隐，面积只限文字）；设置页左栏选中项 Gray-100 → 0.08 暖灰 tint 增强可辨度；左栏选中项字重 500→600（PingFang 上 500 肉眼无差）+ title 套同款红字渐隐渐变）（v1.3.5：红字渐隐渐变推广到文件树/大纲 active 项文字——1.13.7 起大纲并入 tree 组件，`.outline-item` 已失效，主题里仅留作旧版本兜底）
+- **v1.3 纸感材质层（作者拍板激进重塑）**：中性灰阶从 zinc 换 stone 暖灰系；全局 feTurbulence 噪点覆盖层（2% 级、fixed、pointer-events:none、打印隐藏）；阴影 token 统一暖黑 rgba(28,25,23,…)。目标是"白纸读成高级印刷纸"。
+- **签名构造线 v1.3 地平线化**：横线两端 15% 消隐 + 整体 0.55 透明度，从"横梁"退为"地平线"；新增 active tab 短红游标（28×2 背景画法，句读级红导航例外同族）。空状态氢徽纪念碑化（340×360 + 层间投影 + 蓝图网格 + 桌面端操作 hover 浮现）。（v1.3.1：横线上移 8px 贴住 tab 栏下沿并与红游标相接；竖线同款消隐；噪点 0.06；氢徽方圆降 200/300 档；蓝图网格 5%）（v1.3.2：游标改 28×4 骑跨地平线（后被 v1.3.3 红环取代）；网格 64px 稀疏化 + mask 收紧；氢徽 idle 呼吸 h2-float 6s/4.5s 错频；图片 hairline 收边归入"方"；非 active tab hover 灰底 pill）（v1.3.3：横线 -8px 收回、线回原位与悬浮带保持距离；红游标退役——"线与 pill 间夹游离零件"两版均败）（v1.3.4：pill 红环试过即退役（作者否掉），active tab 定稿为灰底 + 红字渐隐渐变（background-clip:text，Red 600 起 → Red 500 → 末端 62% 隐，面积只限文字）；设置页左栏选中项 Gray-100 → 0.08 暖灰 tint 增强可辨度；左栏选中项字重 500→600（PingFang 上 500 肉眼无差）+ title 套同款红字渐隐渐变）（v1.3.5：红字渐隐渐变推广到文件树/大纲 active 项文字——1.13.7 起大纲并入 tree 组件，`.outline-item` 已失效，主题里仅留作旧版本兜底）
 
 ---
 
@@ -206,12 +206,12 @@ Opendian sidebar-debug 的真实例子：`position: absolute` 解耦、负 margi
 - hairline 一致性、4px 网格、字重层级是否失守（直角路线零容忍）。
 - **如果要发版**：bump version 后打 tag（无 v 前缀，== version）并 `git push origin main --tags`，workflow 自动接管（见下）。
 
-### 版本号升哪一位（Elijah 裁决，2026-07-12）
+### 版本号升哪一位（作者裁决，2026-07-12）
 
 - **patch（x.y.Z）**：默认档。bug 修复、视觉调优（密度/颜色/间距/单组件重画）、覆盖缺口补齐。
 - **minor（x.Y.0）**：设计语言层面的新增或改变——新的签名元素、新的交互范式、空间结构重设计（如连续画布这种量级）。
-- **major（X.0.0）**：只在 Elijah 明确拍板时用。
-- **拿不准就 patch**；升 minor/major 前先问 Elijah。教训：1.2.0 实际内容是表格调优 + tag 重画 + 链接 bug 修，本应是 1.1.1。
+- **major（X.0.0）**：只在作者明确拍板时用。
+- **拿不准就 patch**；升 minor/major 前先问作者。教训：1.2.0 实际内容是表格调优 + tag 重画 + 链接 bug 修，本应是 1.1.1。
 
 > ⚠️ **别被 `versions.json` 误导。** 主题（theme）根本不读它——那是插件概念。留着无害，但**不要**把"同步 versions.json"当成发版必做项。
 

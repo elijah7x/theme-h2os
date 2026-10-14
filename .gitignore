@@ -5,6 +5,3 @@ Thumbs.db
 # H2 OS does not bundle fonts (marketplace forbids it).
 # Any local private testing fonts (Poppins/Montserrat) must not be committed.
 fonts/
-
-# Local marketing exports. Keep Xiaohongshu assets out of the repository and releases.
-promo/

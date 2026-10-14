@@ -5,7 +5,7 @@
    几何: 圆(交互) · 方(内容) · 三角(签名)
    ============================================================
    Phase 0 只定义 token，不写组件。切到 Obsidian 验证裸色板对了再往上盖。
-   设计文档: Uranus/1 Projects/H2 OS/H2 OS 主题介绍.md
+   设计文档: 见作者本地知识库（不随仓库发布）
    ============================================================*/
 
 
@@ -176,7 +176,7 @@ body.theme-light {
   /* 边线：hairline 一致性是直角路线的生命线 */
   --h2-border:         var(--h2-gray-200);    /* 分隔线 */
   --h2-border-strong:  var(--h2-gray-300);    /* 强调边框 */
-  /* 签名构造线（v0.8.6，Elijah 立项）：全主题仅两条——导航栏下沿
+  /* 签名构造线（v0.8.6，作者立项）：全主题仅两条——导航栏下沿
      （横）+ 设置页左栏右沿（竖）。红 500 半透明压暗，细而不响。
      ⚠️ 红色纪律第 5 例外：构造线级红持续态，限定一横一竖各一条，
      禁止扩散到其他分隔线。
@@ -281,7 +281,7 @@ body.theme-light {
   --tab-text-color-focused-active:      var(--h2-text);
   /* v0.8.10：active 页签恒红。原值 h2-text（深灰）导致"焦点进正文
      红就消失"——与 1382 行的红字规则打架，active 指示忽红忽灰
-     （Elijah 实测困惑，与侧栏图标 v0.8.9 同病）。"你在这里"指示
+     （作者实测困惑，与侧栏图标 v0.8.9 同病）。"你在这里"指示
      不随键盘焦点闪烁，与侧栏 active 图标同纪律。 */
   --tab-text-color-focused-active-current: var(--h2-accent);
   --tab-background-active:              transparent;
@@ -478,7 +478,7 @@ body.theme-light {
      （app.css 7339），--icon-stroke 默认 = --icon-m-stroke-width。
      全局降一档，整个 app 几百个 Lucide 图标从"敦实工具风"变
      "细线精密风"。这是"换声"——用户说不出哪里变了但全身图标性格变了。
-     ⚠️ 边界（Marcus 顾问红线）：禁止 mask-image 全量换图。
+     ⚠️ 边界（顾问红线）：禁止 mask-image 全量换图。
         Lucide 是 JS 注入的内联 SVG，CSS 改不了 path 数据，
         mask-image 换图是几百个图标 × 各种状态的维护地狱，是插件领地。
      ──────────────────────────────────────────────────────────── */
@@ -500,7 +500,7 @@ body.theme-light {
 
 
 /* ════════════════════════════════════════════════════════════
-   v1.3 · 纸感材质层（Elijah 拍板激进重塑）
+   v1.3 · 纸感材质层（作者拍板激进重塑）
    全局固定噪点：feTurbulence 灰噪，3% 级透明度，破除数字平涂感——
    白纸读成"高级印刷纸"而非屏幕白。fixed + pointer-events:none，
    静态贴图合成一次，无滚动重绘税。z-index 置顶是必要条件：
@@ -1128,7 +1128,7 @@ h5, h6 {
 
 /* 阅读模式：几何双块引号（v0.5.1「记号重绘」首件）
    ──────────────────────────────────────────────────────────────
-   红短杠版被 Elijah 否掉（仍是"线的家族"，平凡）。换范式：
+   红短杠版被作者否掉（仍是"线的家族"，平凡）。换范式：
    引用的记号本来是引号——把引号本身重绘成几何。
    两个 8px 实心方块对角错位（模拟 „ 的双点结构），一灰一红
    （"一屏一红"落点）。半悬挂：不伸出页边距（窄栏会裁切），
@@ -1424,7 +1424,7 @@ h5, h6 {
 }
 
 /* 设置项 active 状态：用沉浸底色，不强行加灰底卡片（第三方插件兼容）。
-   v1.3.4（Elijah 实测）：Gray-100 在 modal 白底上近乎隐形，左栏读成
+   v1.3.4（作者实测）：Gray-100 在 modal 白底上近乎隐形，左栏读成
    "全部置灰"。换 --nav-item-background-active（0.08 暖灰 tint），
    选中行有可辨的底，红字 + 500 字重不变。 */
 .vertical-tab-nav-item.is-active {
@@ -1476,7 +1476,7 @@ h5, h6 {
   border-radius: var(--radius-s);
 }
 
-/* v1.3.4 红字渐隐渐变推广到文件树/大纲 active（Elijah 要求同语汇）。
+/* v1.3.4 红字渐隐渐变推广到文件树/大纲 active（作者要求同语汇）。
    asar 实锤（Obsidian 1.13.7）：文件树与大纲共用 tree 组件，
    active 行 = .tree-item-self.is-active，文字在 .tree-item-inner
    （旧 .outline-item 类已从 app.css 消失，下方大纲旧规则在 1.13.7
@@ -1583,8 +1583,8 @@ h5, h6 {
   padding-inline: 12px;
 }
 
-/* active tab：灰底 + 红字。红环 v1.3.3 试过即退役（Elijah 实拍否掉）。
-   v1.3.4 红字渐隐渐变（Elijah 提案）：深红起笔、中段正红、末端渐隐
+/* active tab：灰底 + 红字。红环 v1.3.3 试过即退役（作者实拍否掉）。
+   v1.3.4 红字渐隐渐变（作者提案）：深红起笔、中段正红、末端渐隐
    到 62%——"墨迹渐干"的收尾，面积只限标题文字本身，克制不抢阅读。
    background-clip: text 实现；fallback 色先声明，不支持的环境退回纯红字。 */
 .workspace .mod-root .workspace-tabs:not(.mod-stacked) .workspace-tab-header.is-active .workspace-tab-header-inner {
@@ -1634,7 +1634,7 @@ h5, h6 {
 
 /* 红点导航语（v0.3.1）：句读级红点 = "你在这里"。
    弃顶部红线——inset shadow 跟随容器圆角在两端下弯，是 2014-16
-   Android tab indicator 的旧范式（Elijah 实看否掉）。
+   Android tab indicator 的旧范式（作者实看否掉）。
    红点：圆 = 状态点（几何语法归属），与 checkbox 红圆同家族，
    句读级面积，是"红不做大面积持续态"纪律的唯一持续态例外。 */
 .workspace-tab-header.is-active .workspace-tab-header-inner-title::before {
@@ -1671,12 +1671,12 @@ h5, h6 {
 }
 .workspace-tab-header .workspace-tab-header-status-icon.mod-pinned {
   /* v0.8.1 二修：status icon 容器原生尺寸太小，14px 背景被压缩成
-     红色小月牙（Elijah 实测截图）。显式撑容器 16px + 背景 contain；
+     红色小月牙（作者实测截图）。显式撑容器 16px + 背景 contain；
      灰方描边 1.5→1.75、Gray 400→500（灰 tab 底上 1.5px Gray 400 隐形）。 */
   width: 16px;
   height: 16px;
   flex: 0 0 auto;
-  /* v0.8.4：方 → 空心倒三角（Elijah 拍板）。红点（你在这里）+
+  /* v0.8.4：方 → 空心倒三角（作者拍板）。红点（你在这里）+
      倒三角（钉入）="钉在此处"。空心描边形态小尺寸立得住
      （初版实心倒三角失败是因为无内部细节，非形状本身问题）。 */
   background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M3.5 5.5 13.5 5.5 8.5 13Z' fill='none' stroke='%2378716C' stroke-width='1.75' stroke-linejoin='round'/><circle cx='4.5' cy='4.5' r='3.25' fill='%23D14A4A'/></svg>") no-repeat center / contain;
@@ -1720,7 +1720,7 @@ h5, h6 {
 /* v1.3 蓝图构造线：网格铺满空画布，径向 mask 让网格只在氢徽
    周围显形——把 feature-artboard 的 "A working diagram" 工程图
    气质搬进日常。rgba(28,25,23,0.045) = 暖黑 4.5%，印刷网纹级。
-   v1.3.2（Elijah 实测）：32px 密网格 + 大光晕让散线在空处读作
+   v1.3.2（作者实测）：32px 密网格 + 大光晕让散线在空处读作
    "划痕"。间距放大到 64px、mask 收紧贴住构图——稀疏且只围绕
    氢徽的线才读作蓝图。 */
 .workspace-leaf-content[data-type="empty"] .empty-state-container {
@@ -1733,7 +1733,7 @@ h5, h6 {
   mask-image: radial-gradient(ellipse 30% 34% at 34% 35%, black 25%, transparent 78%);
 }
 
-/* ── 氢徽·纪念碑版（v1.3，Elijah 拍板激进重塑）─────────────────
+/* ── 氢徽·纪念碑版（v1.3，作者拍板激进重塑）─────────────────
    从 240×180 小构图放大到 340×360 纪念碑级，空状态从"小 logo"
    升格为"第一屏装置"。关系规则仍锁死：① 面积序 方>圆>三角
    （232² > π·84² > 148×128/2）；② 三角尖端 (186,112) 落在方圆
@@ -1862,7 +1862,7 @@ body:not(.is-mobile) .workspace-leaf-content[data-type="empty"] .empty-state:foc
         主战场，却是 Phase 0-3 唯一只做了"字体回退"的地方。W1 把
         H2OS 排面语言搬进来：左侧 nav 红点导航语 + 分组标题标签式；
         右侧去卡片感 + 分区标题标签式 + 设置项之间 hairline 化。
-   红线（Marcus 顾问）：所有选择器 asar 实测，第三方插件设置 tab
+   红线（顾问）：所有选择器 asar 实测，第三方插件设置 tab
         抽查兼容（改的是 .vertical-tab-* 公共结构，Dataview/Git 共用）。
    ⚠️ 已知约束（asar 实测）：右侧内容区无专属"tab 顶部标题"DOM，
         分区感靠 .setting-item-heading（右侧"账户""高级"小节标题）
@@ -1964,7 +1964,7 @@ body:not(.is-mobile) .workspace-leaf-content[data-type="empty"] .empty-state:foc
   display: none !important;
 }
 
-/* v1.3.4 选中项增强（Elijah 实测）：字重 500 在 PingFang 上肉眼无差，
+/* v1.3.4 选中项增强（作者实测）：字重 500 在 PingFang 上肉眼无差，
    提到 600；标题文字套 tab 同款红字渐隐渐变（background-clip: text），
    渐变只挂在 title span 上，不碰 chevron 图标色。 */
 .modal.mod-settings .vertical-tab-nav-item.is-active {
@@ -1988,7 +1988,7 @@ body:not(.is-mobile) .workspace-leaf-content[data-type="empty"] .empty-state:foc
                           + .prompt-results (列表)
                 + .prompt-instructions
    选中项的类名 asar 查不到（运行时 JS 注入）——⚠️ 待实测（路 B）：
-   Elijah 实机 Cmd+P，选中一项，告诉我 .prompt-results 下子元素的
+   作者实机 Cmd+P，选中一项，告诉我 .prompt-results 下子元素的
    class（猜测是 .suggestion-item.is-selected 或 .prompt-result.is-selected，
    但禁止凭猜落码）。
    ──────────────────────────────────────────────────────────── */
@@ -2006,7 +2006,7 @@ body:not(.is-mobile) .workspace-leaf-content[data-type="empty"] .empty-state:foc
 
 
 /* ════════════════════════════════════════════════════════════
-   W1 终止线。验收：Elijah 实机走一遍设置页 + Cmd+P，截图发 Marcus。
+   W1 终止线。验收：作者实机走一遍设置页 + Cmd+P，截图发顾问。
    实测待办（路 B）：Cmd+P 选中项的真实类名。
    ════════════════════════════════════════════════════════════ */
 
@@ -2018,7 +2018,7 @@ body:not(.is-mobile) .workspace-leaf-content[data-type="empty"] .empty-state:foc
         角落，现在全是 Obsidian 原生形态。W2 按几何语法统一重做，
         让"处处被重新设计过"的体感渗到每个界面。
    招牌动作：slider thumb 改红点（AOD 红秒针语汇，和红点导航语同族）。
-   红线（Marcus 顾问）：所有选择器 asar 实测；控件家族改动是全局的，
+   红线（顾问）：所有选择器 asar 实测；控件家族改动是全局的，
         第三方插件的自定义控件可能受影响——验收时抽查。
    ⚠️ asar 关键发现：Obsidian 控件默认 --input-shadow 是 inset 1px +
       4 层散阴影（2015 MD 重阴影遗风），这是"敦实工具风"的根源。
@@ -2114,7 +2114,7 @@ button.mod-cta.mobile-tap {
 
 
 /* ════════════════════════════════════════════════════════════
-   W2 终止线。验收：Elijah 实机走设置页 + 命令面板 + 笔记内任意 slider/
+   W2 终止线。验收：作者实机走设置页 + 命令面板 + 笔记内任意 slider/
    dropdown/input/button，抽查第三方插件控件兼容。
    ════════════════════════════════════════════════════════════ */
 
@@ -2126,7 +2126,7 @@ button.mod-cta.mobile-tap {
         没有入场动效——modal/prompt/menu 全靠 JS mount/unmount 瞬时
         出现，CSS 层无 transition 无 animation。W4 加一层轻缓入场，
         操作的"质感"立刻和官方分家。
-   红线（Marcus 顾问）：只动 transform 和 opacity（重排掉帧），
+   红线（顾问）：只动 transform 和 opacity（重排掉帧），
         走已有 token（--h2-duration-* / --h2-ease），reduced-motion 兜底
         已在文件头 reduced-motion 段加好。
    ⚠️ asar 关键发现：Obsidian 自己有 slideIn keyframes
@@ -2189,7 +2189,7 @@ button.mod-cta.mobile-tap {
 
 /* ── 窗楣三段线（迷你版）· v1.2 退役 ──────────────────────────
    曾画在 modal / popover 顶部 + menu 分组分隔（30/40/30 迷你版）。
-   Elijah 裁决：界面 chrome 里的三段线是噪音——哲学元素只在正文
+   作者裁决：界面 chrome 里的三段线是噪音——哲学元素只在正文
    排面出场（inline title / hr / 脚注区 / 空状态），chrome 保持安静。
    menu 分组分隔退回官方 hairline。 */
 .menu .menu-separator {
@@ -2209,7 +2209,7 @@ button.mod-cta.mobile-tap {
 
 
 /* ════════════════════════════════════════════════════════════
-   W4 终止线。验收：Elijah 实机触发 modal（Cmd+, 设置页）/ Cmd+P /
+   W4 终止线。验收：作者实机触发 modal（Cmd+, 设置页）/ Cmd+P /
    右键菜单 / @ 提及自动补全，感受入场手感。reduced-motion 下动画归零。
    ════════════════════════════════════════════════════════════ */
 
@@ -2219,7 +2219,7 @@ button.mod-cta.mobile-tap {
    ════════════════════════════════════════════════════════════
    定位：图标层换声 = 全局 stroke-width 降档 + bullet 颜色接管。
         这是"说不出哪里变了但全身图标性格变了"的换声。
-   红线（Marcus 顾问，不可省略）：禁止 mask-image 全量换图——
+   红线（不可省略）：禁止 mask-image 全量换图——
         Lucide 是 JS 注入的内联 SVG，CSS 改不了 path 数据，
         mask-image 是几百个图标 × 各种状态的维护地狱，是插件领地。
    ⚠️ asar 关键发现（验证后才敢动手）：
@@ -2235,7 +2235,7 @@ button.mod-cta.mobile-tap {
    结论：W3 不需要"五到十个高频位置伪元素重画"——asar 验证后发现
         bullet/checkbox/折叠箭头都已是几何形态或被硬编码保护，
         全局 stroke-width token + bullet 颜色 token 就够了。
-        Marcus 的提案是对的，但落地比他预估的更轻。
+        顾问的提案是对的，但落地比预估的更轻。
    ──────────────────────────────────────────────────────────── */
 
 /* ── 全局 stroke-width：纯 token 接管，无组件层规则 ──────────
@@ -2280,19 +2280,19 @@ button.mod-cta.mobile-tap {
 
 
 /* ════════════════════════════════════════════════════════════
-   W3 终止线。验收：Elijah 实机看图标整体气质（侧边栏图标、设置页图标、
+   W3 终止线。验收：作者实机看图标整体气质（侧边栏图标、设置页图标、
    顶栏按钮图标）是否变精密；list bullet 是否变 Gray 400。
    v0.4 全部四个工作流（W1→W2→W4→W3）完工，进入整体一分钟旅程验收。
    ════════════════════════════════════════════════════════════ */
 
 
 /* ════════════════════════════════════════════════════════════
-   v0.6 · 氢徽署名（顾问 Marcus 主视觉，agent 落码）
+   v0.6 · 氢徽署名（顾问主视觉，agent 落码）
    ════════════════════════════════════════════════════════════
    完整版氢徽在 Phase 4 空状态（上方），徽记渗到日常 chrome：
      · 设置弹窗标题旁徽记版 ~24px（任务三，已落）
      · vault 栏设置按钮空心方氢徽 16px（T2b，签名与功能合一）
-   关系规则（任何尺寸重绘必守，Marcus 锁定）：① 面积序 方>圆>三角；
+   关系规则（任何尺寸重绘必守，顾问锁定）：① 面积序 方>圆>三角；
      ② 三角尖端处于方圆交叠区（画眼）；③ 唯一红：只有三角红。
    ⚠️ 红线：data URI 是内联资源、市场合规；禁止任何网络 URL。
         SVG 形状比例和颜色由徽记规范管，落码只调 background-size 和间距。
@@ -2337,14 +2337,14 @@ body:not(.is-mobile) .workspace-split.mod-left-split .workspace-sidedock-vault-p
    退到 Gray 900（默认），让设置按钮的氢徽独自承担红色识别。 */
 .workspace-drawer-vault-name {
   font-family: var(--font-interface-theme);
-  font-weight: 600;   /* v0.8.9：550→600（Elijah："再加一点点"） */
+  font-weight: 600;   /* v0.8.9：550→600（作者反馈：再加一点点） */
   background-image: none;
   padding-left: 0;
 }
 
 
 /* ── T2b：设置按钮复刻核心氢徽（三件俱全徽记版）──────────────
-   v0.6.3：空心方版 Elijah 觉得不好看，直接复刻最核心的氢徽——
+   v0.6.3：空心方版，作者觉得不好看，直接复刻最核心的氢徽——
    三件俱全的徽记版（方 Gray 200 / 圆 Gray 300 / 红三角），与空状态
    完整版、设置弹窗标题徽记版同源。设置入口挂主题徽记，签名与功能合一。
 
@@ -2367,17 +2367,17 @@ body:not(.is-mobile) .workspace-split.mod-left-split .workspace-sidedock-vault-p
   display: none;   /* 隐藏原生 lucide-settings 图标 */
 }
 .workspace-drawer-vault-actions > .clickable-icon:last-child {
-  /* v0.7.2（Marcus 重画）：旧版违反氢徽关系规则——三角面积压过圆
+  /* v0.7.2（顾问重画）：旧版违反氢徽关系规则——三角面积压过圆
      （面积序破）、尖端 (7.5,2) 远在交叠区 y[6.5,8.5] 之外（"冒尖"丢失），
      视觉退化成一个大红三角。新版：方 9.5² > 圆 r3.5 > 三角(底8×高6.5)，
      尖端 (8.2,7) 精确落在方圆交叠区内。 */
-  /* v0.8.8 二版：A+红点结合案（Elijah 定稿方向）——三段线做滑轨，
+  /* v0.8.8 二版：A+红点结合案（作者定稿方向）——三段线做滑轨，
      红点做滑块。三条水平灰线竖排（三段线 motif 转图标），红点骑在
      中线偏右 = 正在被调节的值。语义具象（设置=调节），红点首次
      获得功能叙事（当前值落点），仍是句读级一红。
      "红点系"构词法升级：灰几何体（名词）+ 红点（动作/落点）。
      几何：三轨 x[3,13] y=4.5/8/11.5，描边 1.75 圆帽；滑块 r2.25 @(10.5,8)。 */
-  background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><g stroke='%2378716C' stroke-width='1.75' stroke-linecap='round'><line x1='3' y1='4.5' x2='13' y2='4.5'/><line x1='3' y1='8' x2='13' y2='8'/><line x1='3' y1='11.5' x2='13' y2='11.5'/></g><circle cx='10.5' cy='8' r='2.25' fill='%23D14A4A' stroke='%23FAFAF9' stroke-width='1'/></svg>") no-repeat center / 18px 18px;   /* v0.8.8 三版：16→18px（Elijah："小气了点"） */
+  background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><g stroke='%2378716C' stroke-width='1.75' stroke-linecap='round'><line x1='3' y1='4.5' x2='13' y2='4.5'/><line x1='3' y1='8' x2='13' y2='8'/><line x1='3' y1='11.5' x2='13' y2='11.5'/></g><circle cx='10.5' cy='8' r='2.25' fill='%23D14A4A' stroke='%23FAFAF9' stroke-width='1'/></svg>") no-repeat center / 18px 18px;   /* v0.8.8 三版：16→18px（作者反馈：小气了点） */
   opacity: 0.85;
   transition: opacity var(--h2-duration-fast) var(--h2-ease);
 }
@@ -2406,7 +2406,7 @@ body:not(.is-mobile) .workspace-split.mod-left-split .workspace-sidedock-vault-p
 
 /* ════════════════════════════════════════════════════════════
    v0.6 氢徽署名终止线。
-   待 Elijah：① 路 B 实测 help/settings 按钮类名；② T3 A/B 选版。
+   待作者：① 路 B 实测 help/settings 按钮类名；② T3 A/B 选版。
    ════════════════════════════════════════════════════════════ */
 
 
@@ -2449,7 +2449,7 @@ body:not(.is-mobile) .workspace-split.mod-root .workspace-tabs .workspace-tab-he
 }
 
 /* v0.8.10 ribbon 功能区去框线：最左功能区展开时右缘有明显边框
-   （Elijah 截图），违反灰线大收敛。底色融入工作台 bench
+   （作者截图），违反灰线大收敛。底色融入工作台 bench
    （半透明模式下随 token 自动变玻璃）。 */
 body:not(.is-mobile) .workspace-ribbon.mod-left {
   border: none;
@@ -2458,7 +2458,7 @@ body:not(.is-mobile) .workspace-ribbon.mod-left {
 }
 /* ribbon ::before 是标题栏段的窗口拖拽热区（-webkit-app-region:
    drag，asar 实锤），自带 tab-outline 灰下边线——与签名红线交叠
-   （Elijah 截图）。只删线，绝不动元素本体（拖拽热区是功能）。 */
+   （作者截图）。只删线，绝不动元素本体（拖拽热区是功能）。 */
 body:not(.is-mobile) .workspace-ribbon.mod-left::before {
   border-bottom: none;
 }
@@ -2598,7 +2598,7 @@ body:not(.is-mobile) .workspace-split.mod-sidedock .workspace-tabs ~ .workspace-
 
 /* 侧栏纸内 tab 头部区融入纸面。
    v0.8.7：下边框也关掉——签名红线已全宽贯穿，侧栏自己的灰线
-   悬在红线上方成了双线（Elijah 截图）。 */
+   悬在红线上方成了双线（作者截图）。 */
 body:not(.is-mobile) .workspace-split.mod-sidedock .workspace-tabs .workspace-tab-header-container {
   background-color: transparent;
   border-bottom: none;
@@ -2610,7 +2610,7 @@ body:not(.is-mobile) .workspace-split.mod-sidedock .workspace-leaf-content {
 }
 
 /* 侧栏、设置页与正文区隐藏滚动槽/滑块；滚轮、触控板与键盘滚动仍保留。
-   v0.8.5：正文区（mod-root）加入——极简到极致（Elijah 拍板）。
+   v0.8.5：正文区（mod-root）加入——极简到极致（作者拍板）。
    ⚠️ 取舍备案：丢失滚动位置视觉指示，长文档定位靠大纲/搜索/Cmd+F。 */
 body:not(.is-mobile) .workspace-split.mod-sidedock *,
 body:not(.is-mobile) .workspace-split.mod-root *,
@@ -2736,7 +2736,7 @@ body:not(.is-mobile) .workspace-split.mod-sidedock.is-sidedock-collapsed .worksp
 
 
 /* ════════════════════════════════════════════════════════════
-   S2.1 · 纸面工作台瑕疵清剿（v0.7.2，Marcus，Elijah 实机反馈）
+   S2.1 · 纸面工作台瑕疵清剿（v0.7.2，顾问，作者实机反馈）
    ════════════════════════════════════════════════════════════ */
 
 /* ① mod-root 自带白底盖住台面（"中央底色和左右不一样"的病根），
@@ -2801,7 +2801,7 @@ body:not(.is-mobile) .sidebar-toggle-button.mod-right .clickable-icon:hover {
    生硬接缝同时解决。
    asar 实测：.workspace-tabs.mod-top 的 tab-container 走 --tab-container-background
    （继承 --titlebar-background）。token 层接管即可。
-   ⚠️ 红线（Marcus）：-webkit-app-region: drag 是窗口拖拽区，绝不能动——
+   ⚠️ 红线：-webkit-app-region: drag 是窗口拖拽区，绝不能动——
       只改背景色，不改这个属性。改完必须实测"按住顶带能拖动窗口"。
    落码：token 层把 --titlebar-background 改台面色。 */
 body:not(.is-mobile) {
@@ -3025,7 +3025,7 @@ body.theme-light {
 
 
 /* ════════════════════════════════════════════════════════════
-   v0.8.1 · 愉悦时刻（Delight Moments，Marcus 直做）
+   v0.8.1 · 愉悦时刻（Delight Moments，顾问直做）
    ════════════════════════════════════════════════════════════
    方针：纪律管常态，愉悦住事件。三个用户情绪峰值时刻各慷慨一次，
    全部瞬态（红色纪律无恙）、全部 transform/opacity/background-size
@@ -3049,11 +3049,11 @@ body.theme-light {
   to   { transform: scaleX(1); }
 }
 /* 仪式级时长（v0.8.2）：240ms 在"一次性开幕"场景实测太快，肉眼
-   容易错过（Elijah 反馈）。常规交互仍走 fast/base/slow 三档，
+   容易错过（作者反馈）。常规交互仍走 fast/base/slow 三档，
    grand 只给一次性仪式动效（开幕、氢徽入场），不给高频交互。 */
 body {
   --h2-duration-grand: 450ms;
-  /* 签名构造线专用刷入时长与曲线（v0.8.7，Elijah 定稿方向）：
+  /* 签名构造线专用刷入时长与曲线（v0.8.7，作者定稿方向）：
      行程感 = 慢进（前半段缓慢蓄力）→ 过中点后鞭梢式快速收掉。
      曲线 P1(0.75,0) 起步近水平=慢进，P2(1,0.45) 收尾近垂直=急收。
      这是与签名曲线（快出柔落）相反的性格，专属构造线，不外借。 */
@@ -3117,7 +3117,7 @@ body {
    第一拍 结构与日常落定（方+圆，0ms 起）；
    第二拍 灵感冒尖（红三角，160ms 后浮出）。
    backwards 填充让三角在延迟期完全不可见——"先有台，再冒尖"。 */
-/* v0.8.2：升 grand 时长 + 三角延迟 160→280ms（Elijah 反馈原版偏快，
+/* v0.8.2：升 grand 时长 + 三角延迟 160→280ms（作者反馈原版偏快，
    两拍之间要有可感知的呼吸）。 */
 .workspace-leaf-content[data-type="empty"] .empty-state::before {
   animation: h2-badge-in var(--h2-duration-grand) var(--h2-ease-signature) backwards,
@@ -3136,7 +3136,7 @@ body {
 
 
 /* ════════════════════════════════════════════════════════════
-   v0.8.3 · 愉悦时刻第二批（Marcus 直做，选择器全部 asar 实锤）
+   v0.8.3 · 愉悦时刻第二批（顾问直做，选择器全部 asar 实锤）
    ════════════════════════════════════════════════════════════
    asar 验证记录（strings obsidian.asar，2026-07-11）：
    .search-result-file-matched-text / .cm-searchMatch /
@@ -3282,7 +3282,7 @@ body:not(.is-mobile) .app-container {
 
 
 /* ════════════════════════════════════════════════════════════
-   v0.8.6 · 签名构造线（Elijah 立项）+ 灰线大收敛
+   v0.8.6 · 签名构造线（作者立项）+ 灰线大收敛
    ════════════════════════════════════════════════════════════
    灰结构线收敛（vault 栏/状态栏上沿已退役），全界面只留两条
    签名红线：导航栏下沿（横，开 app 左→右刷入）+ 设置页左栏右沿
@@ -3304,7 +3304,7 @@ body:not(.is-mobile) .app-container {
 }
 
 /* ── 导航栏下沿签名横线 ──────────────────────────────────────
-   v0.8.7 全宽版：初版画在 tab 容器上只有正文区宽（Elijah 截图定改），
+   v0.8.7 全宽版：初版画在 tab 容器上只有正文区宽（作者截图定改），
    改画在 .workspace::after——横跨整窗（左栏→正文→右栏）。
    垂直落点 = workspace 上 padding + 头部行高（--header-height: 40px，
    asar 实锤），与 tab 栏下沿对齐。原 tab 容器灰线保持关闭。
@@ -3325,7 +3325,7 @@ body:not(.is-mobile) .workspace::after {
   height: 1.5px;
   /* v1.3 地平线化（A 方案）：两端 15% 渐变消隐 + 整体 0.55 透明度——
      从"横梁"退为"地平线"，不再隔绝上下。刷入动画不变。
-     v1.3.2：-8px 补偿收回（Elijah 实测：线贴住悬浮 pill 带反而互相
+     v1.3.2：-8px 补偿收回（作者实测：线贴住悬浮 pill 带反而互相
      干涉，"线上悬浮带、线下画布"的间距才是对的）；红游标同步退役，
      active 信号改由 pill 红环承担（见 UI CHROME tabs 段）。 */
   background: linear-gradient(
@@ -3365,7 +3365,7 @@ body:not(.is-mobile) .workspace::after {
    asar 实锤：.is-translucent:not(.is-fullscreen) 把 --divider-color
    加深到 rgba(0,0,0,0.15)，并以 !important 强制 bench 底透明——
    原被不透明底色盖住的分隔线（左右栏与正文相接处、左下角）全部
-   显形（Elijah 截图）。主题的线纪律在半透明下重申：divider 与
+   显形（作者截图）。主题的线纪律在半透明下重申：divider 与
    tab-outline 双双透明，结构线只留两条签名红线。 */
 body.is-translucent:not(.is-fullscreen) {
   --divider-color: transparent;
@@ -3380,7 +3380,7 @@ body.is-translucent:not(.is-fullscreen) {
 
 /* ── v0.8.9 侧栏工具 active 图标红固化 ───────────────────────
    原生逻辑：active 图标的红跟随 focus，点击别处/再点一次焦点转移
-   红就消失——"我在看文件树"的状态指示忽隐忽现（Elijah 实测困惑）。
+   红就消失——"我在看文件树"的状态指示忽隐忽现（作者实测困惑）。
    固化：active tab 图标常红，不随焦点闪烁。
    红色纪律备案：归入"你在这里"导航例外类（与红点导航同类），
    每侧栏同时只有一个 active，句读级。选择器 asar 实锤
@@ -3765,7 +3765,7 @@ body.is-mobile .status-bar {
    （会破坏密集工具栏如设置页设置项操作按钮）。
 
    ⚠️ 以下尺寸基于 asar 官方默认值推断，实际移动端渲染需
-      Elijah 实测确认哪些位置不足 44px，再逐个加。下面先处理
+      作者实测确认哪些位置不足 44px，再逐个加。下面先处理
       几个确定不足的高频位：modal close、empty-state action。 */
 body.is-mobile .modal-close-button {
   min-width: 44px;
