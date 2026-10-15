@@ -1,5 +1,5 @@
 /* ============================================================
-   H2 OS — Obsidian Theme  v2.0.0（纸面桌台 · 页边图谱 · 暗色 · 折三角开关）
+   H2 OS — Obsidian Theme  v2.0.1（纸面桌台 · 页边图谱 · 暗色 · 折三角开关）
    字体: Poppins · Montserrat · Source Han Sans · JetBrains Mono
    色彩: White #FFFFFF · Warm Gray #1C1917 / #57534E · Red #D14A4A（v1.3 暖灰纸感）
    几何: 圆(交互) · 方(内容) · 三角(签名)
@@ -2770,17 +2770,19 @@ body:not(.is-mobile) .workspace-split.mod-root .workspace-tabs .workspace-tab-he
 }
 
 /* v0.8.10 ribbon 功能区去框线：最左功能区展开时右缘有明显边框
-   （作者截图），违反灰线大收敛。底色融入工作台 bench
-   （半透明模式下随 token 自动变玻璃）。 */
-body:not(.is-mobile) .workspace-ribbon.mod-left {
+   （作者截图），违反灰线大收敛。
+   ⚠️ 选择器必须是 .mod-primary：ribbon 的实测类名是
+   `workspace-ribbon side-dock-ribbon mod-primary`，没有 .mod-left。
+   旧写法 `.workspace-ribbon.mod-left` 从未命中，两条线一直在；半透明下
+   divider / tab-outline token 被压成透明所以只在关闭半透明时露出。 */
+body:not(.is-mobile) .workspace-ribbon.mod-primary {
   border: none;
   border-inline-end: none;
-  background-color: var(--h2-bench);
 }
 /* ribbon ::before 是标题栏段的窗口拖拽热区（-webkit-app-region:
    drag，asar 实锤），自带 tab-outline 灰下边线——与签名红线交叠
    （作者截图）。只删线，绝不动元素本体（拖拽热区是功能）。 */
-body:not(.is-mobile) .workspace-ribbon.mod-left::before {
+body:not(.is-mobile) .workspace-ribbon.mod-primary::before {
   border-bottom: none;
 }
 
@@ -3143,6 +3145,15 @@ body:not(.is-mobile).mod-macos.is-hidden-frameless:not(.is-popout-window) .sideb
   background-color: transparent !important;
   padding-right: 8px !important;
   z-index: var(--layer-cover);
+}
+/* 快速连点右栏收合钮的残影：展开/收起期间，根分栏与侧栏各有一份 fixed 的
+   右钮同时在位（实测最多三份，root 那份宽度 36→8 缩窄漂移），官方靠它们
+   不透明的底色互相遮盖；上面的透明化把遮盖拿掉了，叠影就透出来。
+   `.is-right-sidedock-open` 在点击瞬间翻转，以它为准只留当前状态对应的一份：
+   展开态藏 root 那份，收起态藏侧栏那份。稳态下被藏的本来就不存在，只影响过渡帧。 */
+body:not(.is-mobile).mod-macos.is-hidden-frameless:not(.is-popout-window) .workspace.is-right-sidedock-open .mod-root .sidebar-toggle-button.mod-right,
+body:not(.is-mobile).mod-macos.is-hidden-frameless:not(.is-popout-window) .workspace:not(.is-right-sidedock-open) .mod-sidedock .sidebar-toggle-button.mod-right {
+  display: none !important;
 }
 body:not(.is-mobile) .sidebar-toggle-button svg {
   color: var(--h2-text-faint);
