@@ -1,5 +1,5 @@
 /* ============================================================
-   H2 OS — Obsidian Theme  v0.1.0-dev (Phase 0: token foundation)
+   H2 OS — Obsidian Theme  v2.0.0（纸面桌台 · 页边图谱 · 暗色 · 折三角开关）
    字体: Poppins · Montserrat · Source Han Sans · JetBrains Mono
    色彩: White #FFFFFF · Warm Gray #1C1917 / #57534E · Red #D14A4A（v1.3 暖灰纸感）
    几何: 圆(交互) · 方(内容) · 三角(签名)
@@ -71,9 +71,32 @@ body {
   --h5-size: 1rem;
   --h6-size: 0.875rem;
 
+  /* 标题字重/行高 token（Obsidian 官方 .markdown-rendered hN 与 .HyperMD-header-N
+     都消费 --hN-weight / --hN-line-height，特异性压过裸 hN 规则——只写裸规则
+     阅读模式会漏回官方 700/680/… 变字重。token 一定义，两模式同吃。 */
+  --h1-weight: 600;
+  --h2-weight: 600;
+  --h3-weight: 600;
+  --h4-weight: 600;
+  --h5-weight: 500;
+  --h6-weight: 500;
+  --h1-line-height: var(--h2-line-height-heading);
+  --h2-line-height: var(--h2-line-height-heading);
+  --h3-line-height: var(--h2-line-height-heading);
+  --h4-line-height: var(--h2-line-height-heading);
+  --h5-line-height: var(--h2-line-height-heading);
+  --h6-line-height: var(--h2-line-height-heading);
+  /* 官方 --heading-spacing = p-spacing*2.5 = 40px（用在段落/列表/表格后的标题），
+     特异性压过本主题 .markdown-preview-view hN 的 24px。压回主题意图 24px。 */
+  --heading-spacing: 1.5rem;
+
   /* 段落与列表间距：落在 4px 网格（1rem=16px, 0.5rem=8px, 0.75rem=12px） */
   --p-spacing: 1rem;
   --list-spacing: 0.5rem;
+
+  /* 输入框聚焦环：官方默认 2px 外环 + 1px 边框 = 3px 灰框，设置页搜索框
+     打开即自动聚焦，读成"很重的灰边框"。外环收到 1px（边框变深 + 1px 外环）。 */
+  --input-border-width-focus: 1px;
 
   /* ── 圆角（对应几何语法） ─────────────────────────────────
      方元素直角（content=0），圆元素柔角。
@@ -435,6 +458,7 @@ body.theme-light {
      不用红——红不做持续态（focus 圈是持续态）。 */
   --input-focus-border-color: var(--h2-gray-400);
   --input-radius:           var(--radius-m);   /* 6px，控制类几何语法 */
+  --search-input-radius:    var(--input-radius);   /* macOS 默认 100px 药丸，与 6px 输入框错位 */
   --input-height:           32px;              /* 4px 网格（默认 30px 是非网格值） */
 
   /* dropdown 底色：走 Gray 50 微差表面（不是纯白），让 dropdown 在白底
@@ -551,8 +575,7 @@ body.theme-light::after {
      光靠 duration token 归零不够，显式关闭。 */
   body input[type=checkbox]:checked::after,
   body .inline-title::after,
-  body .workspace-leaf-content[data-type="empty"] .empty-state::before,
-  body .workspace-leaf-content[data-type="empty"] .empty-state::after {
+  body .workspace-leaf-content[data-type="empty"] .empty-state-container::before {
     animation: none !important;
   }
   /* v0.8.3 第二批兜底 */
@@ -646,7 +669,35 @@ h5, h6 {
 .markdown-source-view.mod-cm6 .HyperMD-header-3 { font-size: var(--h3-size); font-weight: 600; }
 .markdown-source-view.mod-cm6 .HyperMD-header-4 { font-size: var(--h4-size); font-weight: 600; }
 .markdown-source-view.mod-cm6 .HyperMD-header-5 { font-size: var(--h5-size); font-weight: 500; }
+/* v1.4：LP 标题颜色回正。Obsidian 的 LP 标题 span 不读 --hN-color，实测落在
+   --text-normal（Gray 600），而阅读模式读 --hN-color（Gray 900）——两个模式
+   标题深浅不一。显式绑定 --hN-color，两模式一致。 */
+.markdown-source-view.mod-cm6 .cm-header-1 { color: var(--h1-color); }
+.markdown-source-view.mod-cm6 .cm-header-2 { color: var(--h2-color); }
+.markdown-source-view.mod-cm6 .cm-header-3 { color: var(--h3-color); }
+.markdown-source-view.mod-cm6 .cm-header-4 { color: var(--h4-color); }
+.markdown-source-view.mod-cm6 .cm-header-5 { color: var(--h5-color); }
+.markdown-source-view.mod-cm6 .cm-header-6 { color: var(--h6-color); }
+
 .markdown-source-view.mod-cm6 .HyperMD-header-6 { font-size: var(--h6-size); font-weight: 500; }
+
+/* LP 标题行高回到标题档：.cm-line 的 1.7 会盖掉 Obsidian 原生 --hN-line-height，
+   h3 盒子 34px vs 阅读模式 26px。盒子收回后下沿补 8px，对齐阅读模式 h 的
+   margin-end，否则标题会比现在更贴下方内容。
+   padding-top 1.5rem = 24px，对齐阅读模式标题 margin-block-start（官方 LP 只给
+   --p-spacing 16px）。官方两条“上一行是空行/标题则 padding-top 归零”规则
+   （特异性更高）依旧生效，空行场景不会双份间距。 */
+.markdown-source-view.mod-cm6 .cm-line.HyperMD-header {
+  line-height: var(--h2-line-height-heading);
+  padding-top: 1.5rem;
+  padding-bottom: 0.5rem;
+}
+
+/* 笔记首行就是标题时与阅读模式对齐（阅读模式官方 first-child margin-top:0），
+   不在文档顶部凭空多出 24px。 */
+.markdown-source-view.mod-cm6 .cm-content > .cm-line.HyperMD-header:first-child {
+  padding-top: 0;
+}
 
 /* H6 标签式：全大写 + 宽字距 + muted，形态与 H5 拉开，遮色仍可分辨。
    uppercase 只影响拉丁字符，中文不受干扰；中文 H6 靠宽字距 + 小字号区分。
@@ -661,9 +712,9 @@ h5, h6 {
 /* inline title：与 H1 对齐，承担文档标题角色（即便用户关掉也保留样式） */
 .inline-title {
   font-size: var(--inline-title-size);
-  font-weight: 600;
+  font-weight: 700;              /* v1.4：600→700，标题是每页的主角 */
   line-height: var(--h2-line-height-heading);
-  letter-spacing: -0.02em;       /* 排面级大字收紧字距 */
+  letter-spacing: -0.03em;       /* 排面级大字收紧字距 */
   color: var(--h2-text);
   margin-top: 1.5rem;            /* 24px，排面上方留白 */
   margin-bottom: 2rem;           /* 32px，排面下方留白 */
@@ -676,7 +727,10 @@ h5, h6 {
   display: block;
   height: 1px;
   margin-top: 1rem;
-  background: linear-gradient(
+  /* v1.4：起笔 28px 一点红（第一段线的头），"句读级红"，三段结构不变 */
+  background:
+    linear-gradient(var(--h2-accent), var(--h2-accent)) left / 28px 100% no-repeat,
+    linear-gradient(
     to right,
     var(--h2-border) 0 31%, transparent 31% 34.5%,
     var(--h2-border) 34.5% 65.5%, transparent 65.5% 69%,
@@ -691,6 +745,23 @@ h5, h6 {
   display: block;
   height: 1px;
   margin-top: 0.75rem;   /* 12px，4px 网格 */
+  background: linear-gradient(
+    to right,
+    var(--h2-border) 0 31%, transparent 31% 34.5%,
+    var(--h2-border) 34.5% 65.5%, transparent 65.5% 69%,
+    var(--h2-border) 69% 100%
+  );
+}
+
+/* 排面同款：Live Preview 的 H1 行（阅读模式规则见上）。几何/色 token 完全一致：
+   文字下 12px 间距 + 1px 三段线，线下 8px 由本行 padding-bottom 承担，
+   与阅读模式 h1 margin-bottom 8px 对齐。伪元素在 .cm-line 内是块级盒，
+   高度计入 CM6 行高测量，无副作用（实测下行位置与阅读模式同构）。 */
+.markdown-source-view.mod-cm6 .cm-line.HyperMD-header-1::after {
+  content: '';
+  display: block;
+  height: 1px;
+  margin-top: 0.75rem;
   background: linear-gradient(
     to right,
     var(--h2-border) 0 31%, transparent 31% 34.5%,
@@ -716,10 +787,19 @@ h5, h6 {
    Folio/Opendian 都不碰这层，靠原生机制工作。H2 OS 同路线。
    ──────────────────────────────────────────────────────────── */
 
-/* 有序/无序列表项之间的间距（阅读模式） */
+/* 有序/无序列表项之间的间距（阅读模式）
+   行距节奏 = 行盒 27.2px + --list-spacing 8px = 35.2px pitch。
+   8px 只走 margin（相邻 li margin 折叠成 8px）；官方 li 的
+   padding-top/bottom: var(--list-spacing)（asar 13571，同 token）
+   会与 margin 叠加成 51.2px pitch，必须清零。 */
 .markdown-preview-view li {
   margin-block-start: var(--list-spacing);
   margin-block-end: var(--list-spacing);
+}
+.markdown-preview-view ul > li,
+.markdown-preview-view ol > li {
+  padding-top: 0;
+  padding-bottom: 0;
 }
 .markdown-preview-view li:first-child { margin-block-start: 0; }
 .markdown-preview-view li:last-child  { margin-block-end: 0; }
@@ -727,9 +807,21 @@ h5, h6 {
 /* Live Preview 列表行间距：补齐阅读模式 li 的 --list-spacing 节奏。
    Obsidian 原生 .cm-line padding:0，LP 列表行若不加间距会与正文段落
    同密（列表分组节奏消失）。只动 padding-bottom（垂直），不碰
-   padding-inline（水平缩进归原生 formatting span）。Folio 同款手法。 */
+   padding-inline（水平缩进归原生 formatting span）。Folio 同款手法。
+   官方 .mod-cm6 .HyperMD-list-line.cm-line 还给 padding-top（asar 13620，
+   同 token），与 padding-bottom 叠加成 43.2px pitch——清零 padding-top，
+   pitch 回到 27.2 + 8 = 35.2px，与阅读模式一致。 */
 .markdown-source-view.mod-cm6 .cm-line.HyperMD-list-line {
+  padding-top: 0;
   padding-bottom: var(--list-spacing) !important;
+}
+
+/* 标题后紧跟首个列表行的间距：阅读模式是 collapse(h margin-bottom 8,
+   ul margin-top 16) = 16px；LP 只有标题行 padding-bottom 8px。补 8px
+   padding-top 凑齐 16px。官方"标题后首行 padding-top:0"规则（特异性
+   0,6,1）会被本条（0,7,0，借道 .cm-content 祖先）压过。 */
+.markdown-source-view.mod-cm6 .cm-content > .cm-line.HyperMD-header + .cm-line.HyperMD-list-line {
+  padding-top: var(--list-spacing);
 }
 
 /* ── 行内代码 ────────────────────────────────────────────────
@@ -1004,6 +1096,18 @@ h5, h6 {
   word-break: break-word;      /* 超长内容在词边界断行，不撑爆列宽 */
 }
 
+/* 列对齐（:---: / ---:）：阅读模式靠官方 .markdown-rendered td[align] 特异性
+   压过上面的 left；LP 单元格同样带 align 属性但官方没写规则，被上面的 left
+   盖掉（实测 LP 的居中/右对齐列全按左排）。LP 补回。 */
+.markdown-source-view.mod-cm6 .cm-table-widget table td[align="center"],
+.markdown-source-view.mod-cm6 .cm-table-widget table th[align="center"] {
+  text-align: center;
+}
+.markdown-source-view.mod-cm6 .cm-table-widget table td[align="right"],
+.markdown-source-view.mod-cm6 .cm-table-widget table th[align="right"] {
+  text-align: right;
+}
+
 /* 单元格内链接：长 URL 允许任意处断行 */
 .markdown-preview-view table td a,
 .markdown-source-view.mod-cm6 .cm-table-widget table td a {
@@ -1072,6 +1176,9 @@ h5, h6 {
   cursor: pointer;
   transition: var(--h2-transition-color);
   position: relative;
+  top: 0;                 /* 官方 .markdown-preview-view .task-list-item-checkbox 的 top:0.2em 会把圆
+                             压低 ~2.7px（与 vertical-align:middle 叠加，实测比文字行中心低 3.7px）；
+                             LP 无此偏移，两模式统一归零 */
   vertical-align: middle;
   margin-right: 0.5rem;   /* 8px，4px 网格 —— 与文字间距 */
 }
@@ -1086,7 +1193,12 @@ h5, h6 {
   border-color: var(--checkbox-color);
 }
 
-.markdown-preview-view input[type=checkbox]:checked::after {
+/* 选择器同时覆盖阅读模式 + Live Preview：LP 的 checkbox 在
+   .markdown-source-view 里，原生勾号（app.css 的 SVG mask ::after）
+   两模式都挂，必须两模式都压，否则阅读模式实测勾号被 mask 裁成碎片
+   （border 勾被 65% mask 切成左中一小截）。 */
+.markdown-preview-view input[type=checkbox]:checked::after,
+.markdown-source-view.mod-cm6 input[type=checkbox]:checked::after {
   content: '';
   position: absolute;
   left: 50%;
@@ -1096,9 +1208,14 @@ h5, h6 {
   border: solid var(--checkbox-marker-color);
   border-width: 0 2px 2px 0;   /* 半格允许 */
   transform: translate(-50%, -60%) rotate(45deg);
+  /* 压掉 Obsidian 原生 SVG mask 勾（background-color + mask-image 65%），
+     否则它与 border 勾叠加渲染成残片。 */
+  background-color: transparent;
+  -webkit-mask-image: none;
+  mask-image: none;
 }
 
-/* 完成态任务文字：faint（不删除线，保留可读性）。
+/* 完成态任务文字：muted（faint 对比度仅 2.5:1，读不清）。
    覆盖阅读模式（.task-list-item.is-checked）+ Live Preview
    （Obsidian 在 LP 用 .cm-formatting-task + 父级行处理，但完成态文字
    降级走 .task-list-item 即可——LP 的 is-checked 也加在 li 上）。
@@ -1106,7 +1223,53 @@ h5, h6 {
 .markdown-preview-view ul > li.task-list-item.is-checked,
 .markdown-preview-view ol > li.task-list-item.is-checked,
 .markdown-source-view.mod-cm6 .HyperMD-task-line:has(.task-list-item-checkbox:checked) {
-  color: var(--h2-text-faint) !important;
+  color: var(--h2-text-muted) !important;
+}
+
+/* 完成态里的 inline code / tag：删除线退役 + muted 降级（v1.4 实测后定稿）。
+   原生 line-through 由祖先 li 传播，Chromium 按各 inline box 自身字体度量
+   画线：mono chip（JetBrains Mono 14px）的 strikeout 位置比正文
+   （Poppins/PingFang 16px）低 4px，tag 低 2.5px，线在 chip/tag 边界断开
+   （实测 pixel scan：text y=41–43，tag y=46–48，chip y=49–51）。
+   试过的无效方案（别再试）：①后代 text-decoration:none——规范与实测都
+   无法阻断祖先传播的 decoration；②统一 line-height/vertical-align——
+   基线本来就对齐，错位来自字体 strikeout 度量差；③text-decoration-thickness
+   只管粗细不管位置；④vertical-align 抬高 chip 4px 可对齐 strike 但 pill 悬浮。
+   唯一可行（fallback）：display:inline-block 把 chip/tag 变成原子 inline，
+   传播的删除线规范上跳过原子盒 → chip/tag 不划线，用 muted 降级表达完成。
+   line-height 实测校准：code 1.2≈原 20.5px、tag 1.4≈原 25.6px，
+   均 < 正文行高 27.2px，不撑行。 */
+.markdown-preview-view li.task-list-item.is-checked code,
+.markdown-source-view.mod-cm6 .HyperMD-task-line:has(.task-list-item-checkbox:checked) .cm-inline-code {
+  display: inline-block;
+  line-height: 1.2;
+  color: var(--h2-text-muted);
+}
+.markdown-preview-view li.task-list-item.is-checked a.tag,
+.markdown-source-view.mod-cm6 .HyperMD-task-line:has(.task-list-item-checkbox:checked) .cm-hashtag {
+  display: inline-block;
+  line-height: 1.4;
+  color: var(--h2-text-muted);
+}
+
+/* 取消态 [data-task="-"] 同款：li 的 line-through 同样会在 chip/tag 上错位。 */
+.markdown-rendered li[data-task="-"].task-list-item code,
+.markdown-source-view.mod-cm6 .HyperMD-task-line[data-task="-"] .cm-inline-code {
+  display: inline-block;
+  line-height: 1.2;
+  color: var(--h2-text-faint);
+}
+.markdown-rendered li[data-task="-"].task-list-item a.tag,
+.markdown-source-view.mod-cm6 .HyperMD-task-line[data-task="-"] .cm-hashtag {
+  display: inline-block;
+  line-height: 1.4;
+  color: var(--h2-text-faint);
+}
+
+/* LP checkbox 边框宽度与阅读模式对齐：app.css LP 硬编码 1px，
+   阅读模式用 token 1.5px，统一走 token。 */
+.markdown-source-view.mod-cm6 input[type=checkbox] {
+  border-width: var(--checkbox-border-width);
 }
 
 /* ── Blockquote（v0.5 pull-quote 范式：去 rail，红短杠开场记号）──
@@ -1492,6 +1655,7 @@ h5, h6 {
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+  font-weight: 600;   /* .tree-item-self 与 -title-content 都显式写了 500，active 靠这里压到 600 */
 }
 
 /* 红点导航语（v0.3.1）：active 文件同款句读级红点，与 active tab 呼应 */
@@ -1713,99 +1877,124 @@ h5, h6 {
    功能保留：不隐藏 action 链接（主题不砍功能），只调 faint 降噪。
    ──────────────────────────────────────────────────────────── */
 
-.workspace-leaf-content[data-type="empty"] .empty-state {
-  position: relative;
-}
+/* v1.4：蓝图网格退役（网格 + 椭圆 mask 会在徽记旁露出散落的十字线残片，
+   不解释任何结构；2.0 的"纸放在桌上"已经建立空间关系）。
 
-/* v1.3 蓝图构造线：网格铺满空画布，径向 mask 让网格只在氢徽
-   周围显形——把 feature-artboard 的 "A working diagram" 工程图
-   气质搬进日常。rgba(28,25,23,0.045) = 暖黑 4.5%，印刷网纹级。
-   v1.3.2（作者实测）：32px 密网格 + 大光晕让散线在空处读作
-   "划痕"。间距放大到 64px、mask 收紧贴住构图——稀疏且只围绕
-   氢徽的线才读作蓝图。 */
+   v2.0 空标签页重排：徽记不再绝对定位在左上 34%，而是和字标、操作列表组成
+   一条居中的竖列——徽记（圆+方+红折角）/ 字标「H₂ OS」/ 三段线 / 四个起点操作。
+   原生结构：.empty-state（绝对铺满、flex 居中）> .empty-state-container >
+   .empty-state-title + .empty-state-action-list > .empty-state-action
+   ×4（图标 + 标签 + 可选快捷键）。徽记 = container::before（流内元素），
+   字标 = title 的 ::before/::after（title 自身的文字"新标签页"用 font-size:0 保留给读屏）。
+   操作列表常显（原先桌面端 hover 才浮现，页面像一张空白封面）；但保持轻：
+   无边框、灰字、悬停才出圆角底，不做卡片。 */
 .workspace-leaf-content[data-type="empty"] .empty-state-container {
-  background-image:
-    linear-gradient(rgba(28, 25, 23, 0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(28, 25, 23, 0.045) 1px, transparent 1px);
-  background-size: 64px 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: none;
+  max-height: none;
+  margin: -6vh 0 0;   /* 视觉重心略高于几何中心 */
+  text-wrap: initial;
+}
+
+/* ── 氢徽·拱形口袋（作者定稿）──────────────────────────────────
+   方是容器（笔记），圆是放进去的一天（念头/日常），红三角是容器折起的
+   一角——一件"收纳"的物件。圆（r72）压在方（144²）的上缘，方被圆的外圈
+   （r84）和右下斜缺口用 mask 负形扣掉，红三角是缺口里留下的折角（48×48）。
+   280×280 画布，图形 144×216，在列里缩到 200px 显示。亮暗各自内嵌色值。 */
+.workspace-leaf-content[data-type="empty"] .empty-state-container::before {
+  content: '';
+  flex: 0 0 auto;
+  width: 200px;
+  height: 200px;
+  pointer-events: none;
+  background-repeat: no-repeat;
   background-position: center;
-  -webkit-mask-image: radial-gradient(ellipse 30% 34% at 34% 35%, black 25%, transparent 78%);
-  mask-image: radial-gradient(ellipse 30% 34% at 34% 35%, black 25%, transparent 78%);
+  background-size: contain;
+}
+body.theme-light .workspace-leaf-content[data-type="empty"] .empty-state-container::before {
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='280' height='280' viewBox='0 0 280 280'><defs><mask id='body' maskUnits='userSpaceOnUse' x='0' y='0' width='280' height='280'><rect width='280' height='280' fill='white'/><circle cx='140' cy='104' r='84' fill='black'/><polygon points='136,260 224,172 224,260' fill='black'/></mask><filter id='contact' x='-20%' y='-20%' width='140%' height='140%' color-interpolation-filters='sRGB'><feDropShadow dx='0' dy='2' stdDeviation='1' flood-color='%231C1917' flood-opacity='.05'/></filter></defs><rect x='68' y='104' width='144' height='144' fill='%23E7E5E4' mask='url(%23body)'/><circle cx='140' cy='104' r='72' fill='%23D6D3D1'/><polygon points='164,248 212,200 212,248' fill='%23D14A4A' filter='url(%23contact)'/></svg>");
+}
+body.theme-dark .workspace-leaf-content[data-type="empty"] .empty-state-container::before {
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='280' height='280' viewBox='0 0 280 280'><defs><mask id='body' maskUnits='userSpaceOnUse' x='0' y='0' width='280' height='280'><rect width='280' height='280' fill='white'/><circle cx='140' cy='104' r='84' fill='black'/><polygon points='136,260 224,172 224,260' fill='black'/></mask><filter id='contact' x='-20%' y='-20%' width='140%' height='140%' color-interpolation-filters='sRGB'><feDropShadow dx='0' dy='2' stdDeviation='1' flood-color='%231C1917' flood-opacity='.05'/></filter></defs><rect x='68' y='104' width='144' height='144' fill='%2357534E' mask='url(%23body)'/><circle cx='140' cy='104' r='72' fill='%2378716C'/><polygon points='164,248 212,200 212,248' fill='%23E5645F' filter='url(%23contact)'/></svg>");
 }
 
-/* ── 氢徽·纪念碑版（v1.3，作者拍板激进重塑）─────────────────
-   从 240×180 小构图放大到 340×360 纪念碑级，空状态从"小 logo"
-   升格为"第一屏装置"。关系规则仍锁死：① 面积序 方>圆>三角
-   （232² > π·84² > 148×128/2）；② 三角尖端 (186,112) 落在方圆
-   交叠区 x[140,232] y[108,192] 内；③ 唯一红只有三角。
-   新增层间投影：方圆共层一道暖黑 drop-shadow，红三角单独一道
-   红色投影——"方托着圆、圆上冒出三角"的雕塑感。
-   v1.3.1：方圆各降一档（100→200 / 200→300），白底上方形不再隐形。 */
-.workspace-leaf-content[data-type="empty"] .empty-state::before {
-  content: '';
-  position: absolute;
-  left: 34%;
-  top: 34%;
-  translate: -50% -50%;
-  width: 340px;
-  height: 360px;
-  pointer-events: none;
-  filter: drop-shadow(0 16px 32px rgba(28, 25, 23, 0.08));
-  background:
-    /* 圆：Gray 300，中景，与方交叠 */
-    radial-gradient(circle closest-side, var(--h2-gray-300) 99%, transparent 100%)
-      no-repeat 140px 24px / 168px 168px,
-    /* 方：Gray 200，背景层，左下，最大 */
-    linear-gradient(var(--h2-gray-200), var(--h2-gray-200))
-      no-repeat 0 108px / 232px 232px;
-}
-
-/* 三角：前景唯一红，"冒尖"本体。红色 drop-shadow 让尖端悬浮在
-   方圆交叠区之上。translate 偏移 = 三角 top-left (112,112)
-   相对容器中心 (170,180) 的 delta (-58,-68)。 */
-.workspace-leaf-content[data-type="empty"] .empty-state::after {
-  content: '';
-  position: absolute;
-  left: 34%;
-  top: 34%;
-  translate: calc(-50% - 58px) calc(-50% - 68px);
-  width: 148px;
-  height: 128px;
-  pointer-events: none;
-  filter: drop-shadow(0 8px 16px rgba(209, 74, 74, 0.30));
-  background: var(--h2-accent);
-  clip-path: polygon(50% 0, 0 100%, 100% 100%);
-}
-
-/* 默认 "New tab" 标题：视窗不放文字（设计定义），隐藏纯装饰性标题。
-   action 链接是功能，保留但降噪到 faint。 */
+/* ── 字标「H₂ OS」──────────────────────────────────────────────
+   氢分子的 H₂（下标 2，Unicode U+2082，不写大的 2）+ 浅一档的 OS。
+   纯 CSS 生成，不硬编码进语言文案；title 自己的文字（"新标签页"）字号归零，
+   读屏仍可读到。 */
 .workspace-leaf-content[data-type="empty"] .empty-state-title {
-  display: none;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 10px;   /* title 自身 font-size:0，不能用 em */
+  margin: 4px 0 0;
+  font-size: 0;
+  line-height: 1;
+}
+.workspace-leaf-content[data-type="empty"] .empty-state-title::before,
+.workspace-leaf-content[data-type="empty"] .empty-state-title::after {
+  font-family: var(--h2-font-display);
+  font-size: 40px;
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+}
+.workspace-leaf-content[data-type="empty"] .empty-state-title::before {
+  content: 'H\2082';
+  font-weight: 500;
+  color: var(--h2-text);
+}
+.workspace-leaf-content[data-type="empty"] .empty-state-title::after {
+  content: 'OS';
+  font-weight: 300;
+  color: var(--h2-text-muted);
 }
 
+/* 起点操作：常显的安静列表。三段线（与 inline title 同款）做字标与列表之间的分隔。 */
 .workspace-leaf-content[data-type="empty"] .empty-state-action-list {
-  margin-top: 420px;   /* 给纪念碑级构图让位 */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  width: 224px;
+  margin: 28px 0 0;
 }
-
-/* v1.3 纯封面：桌面端操作链接默认隐藏，hover/focus 浮现——
-   空状态是封面不是菜单。移动端无 hover 不适用，保持常显。 */
-body:not(.is-mobile) .workspace-leaf-content[data-type="empty"] .empty-state-action-list {
-  opacity: 0;
-  transition: opacity var(--h2-duration-base) var(--h2-ease);
+.workspace-leaf-content[data-type="empty"] .empty-state-action-list::before {
+  content: '';
+  display: block;
+  height: 1px;
+  margin-bottom: 16px;
+  background: linear-gradient(
+    to right,
+    var(--h2-border) 0 31%, transparent 31% 34.5%,
+    var(--h2-border) 34.5% 65.5%, transparent 65.5% 69%,
+    var(--h2-border) 69% 100%
+  );
 }
-body:not(.is-mobile) .workspace-leaf-content[data-type="empty"] .empty-state:hover .empty-state-action-list,
-body:not(.is-mobile) .workspace-leaf-content[data-type="empty"] .empty-state:focus-within .empty-state-action-list {
-  opacity: 1;
-}
-
 .workspace-leaf-content[data-type="empty"] .empty-state-action {
-  color: var(--h2-text-faint);
-  font-size: 0.875rem;   /* 14px，4px 网格 */
-  transition: var(--h2-transition-color);
+  width: 100%;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 100vw;   /* 圆 = 可交互 */
+  background: transparent;
+  box-shadow: none;
+  color: var(--h2-text-muted);
+  font-size: 13px;
+  transition: background-color var(--h2-duration-fast) var(--h2-ease),
+              color var(--h2-duration-fast) var(--h2-ease);
 }
-
 .workspace-leaf-content[data-type="empty"] .empty-state-action:hover {
-  color: var(--h2-accent);   /* hover 瞬态红，合法 */
+  background: var(--h2-bg-subtle);
+  color: var(--h2-text);
+}
+.workspace-leaf-content[data-type="empty"] .empty-state-action .empty-state-hotkey {
+  margin-inline-start: auto;
+  background: transparent;
+  color: var(--h2-text-muted);
+  font-family: var(--h2-font-system);
+  font-size: 12px;
 }
 
 
@@ -1846,6 +2035,14 @@ body:not(.is-mobile) .workspace-leaf-content[data-type="empty"] .empty-state:foc
   --metadata-label-text-color: var(--h2-text-faint);
   --metadata-input-text-color: var(--h2-text-muted);
   font-size: 0.875rem;   /* 14px，4px 网格 */
+  /* v1.4：属性区落成"方"（结构性内容）——沉底板 + hairline，不再散浮在
+     标题和正文之间。亮色 Gray 100，暗色 token 翻转为沉界面。 */
+  background: var(--h2-gray-100);
+  border: 1px solid var(--h2-border);
+  border-radius: var(--radius-s);
+  padding: 8px 16px;
+  margin-bottom: 1.5rem;   /* 24px */
+  transform: none !important;   /* 压过原生 translateX(-4px)，否则底板比标题列左偏 4px */
 }
 
 
@@ -1919,8 +2116,18 @@ body:not(.is-mobile) .workspace-leaf-content[data-type="empty"] .empty-state:foc
   text-transform: uppercase;
   letter-spacing: 0.06em;   /* 与 H6 同款宽字距 */
   font-size: 0.75rem;       /* 12px，4px 网格 —— 比 Obsidian 默认更小一档，强化标签感 */
-  color: var(--h2-text-muted);   /* Gray 500，达 AA */
+  color: var(--h2-gray-700);   /* Gray 700：CJK 无大写字距撑标签感，小字号灰 500 偏淡 */
   font-weight: 600;
+}
+
+/* 设置页发淡的主因：body 级 antialiased 在 PingFang 12–13px 上收窄笔画。
+   设置页恢复系统默认平滑；描述文字行高 1.3 → 1.5，12px 中文换行不再挤。 */
+.vertical-tab-header,
+.vertical-tab-content {
+  -webkit-font-smoothing: auto;
+}
+.vertical-tab-content .setting-item-description {
+  line-height: 1.5;
 }
 
 
@@ -2036,7 +2243,7 @@ input[type='range']::-webkit-slider-thumb {
   background: var(--h2-accent);          /* Red 500 —— AOD 红秒针语汇 */
   border: none;                          /* 去掉灰边框，红点纯净 */
   box-shadow: none;                      /* 去掉默认散阴影 */
-  transition: background var(--h2-duration-fast) var(--h2-ease),
+  transition: background-color var(--h2-duration-fast) var(--h2-ease),
               transform var(--h2-duration-fast) var(--h2-ease);
 }
 
@@ -2099,12 +2306,90 @@ button.mod-cta.mobile-tap {
 }
 
 
-/* ── Toggle（圆角矩形开关，跟随几何语法）──────────────────────
-   asar 实测：toggle 走 --toggle-* token，Phase 0 已接管颜色
-   （border Gray 300 / thumb 白 / accent Red 500）。
-   W2 微调 thumb 尺寸跟 slider 红点同语汇——slider thumb 14px，
-   toggle thumb 也取偶数尺寸保持视觉协调（Obsidian 默认 14px 已合适）。
-   不改——Obsidian 默认 toggle 尺寸已经在几何语法里，token 接管颜色即可。 */
+/* ── Toggle · 折三角开关（v2.0 原创，作者设计）──────────────────
+   两个等边三角形（一正一倒）拼成一个平行四边形轨道：
+   关 = 轨道里只有左边那个正立的灰三角；
+   开 = 它沿着两三角共用的斜边向右上方折过去，变成右边倒立的红三角。
+   几何：边长 s=24px、高 h=s·√3/2≈20.78px，轨道宽 1.5s=36px（与旧开关同宽）。
+   轨道 = ::before 的平行四边形 clip-path；三角 = ::after 的三角 mask，
+   transform-origin 取三角顶点，绕"顶点→右下角"这条斜边（相对水平 60°）转 180°，
+   在平面内恰好是关于该斜边的镜像——即"折过去"。中间帧是真实的三维折叠
+   （perspective），终态精确落在倒三角位置。只动 transform 和 background-color。
+   ⚠️ clip-path 会裁掉容器自己的 outline/阴影，所以容器本身不裁：焦点环画在
+   容器矩形上，轨道和三角各自裁。
+   ⚠️ Obsidian 在默认 / .modal / .setting-group.mod-list / .mod-small 四处各写了一套
+   尺寸和 ::after 变换，全部用 !important 压平成同一套。
+   几何语法的说明：开关由"圆"改为"三角"（作者拍板），三角仍只出现在签名与折叠语义
+   处——这里的语义正是"折起/展开"。 */
+body .checkbox-container,
+body .modal .checkbox-container,
+body:not(.is-mobile) .setting-group.mod-list .checkbox-container,
+body .checkbox-container.mod-small {
+  --h2-tgl-s: 24px;
+  --h2-tgl-h: calc(var(--h2-tgl-s) * 0.8660254);
+  width: calc(var(--h2-tgl-s) * 1.5) !important;
+  height: var(--h2-tgl-h) !important;
+  border-radius: 0 !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  outline: 0 solid transparent;
+  transition: transform var(--h2-duration-touch) var(--h2-ease-press) !important;
+}
+body.is-mobile .checkbox-container { --h2-tgl-s: 28px; }
+body .checkbox-container.mod-small { --h2-tgl-s: 20px; }
+
+/* 轨道：平行四边形（底边 0→2/3，顶边 1/3→1） */
+body .checkbox-container::before,
+body .modal .checkbox-container::before {
+  opacity: 1;
+  inset: 0;
+  background-color: var(--h2-gray-200);
+  clip-path: polygon(0 100%, 66.6667% 100%, 100% 0, 33.3333% 0);
+  transition: background-color var(--h2-duration-base) var(--h2-ease);
+}
+/* 开启时轨道淡淡带一点红，轨道本身不抢戏 */
+body .checkbox-container.is-enabled::before {
+  background-color: color-mix(in srgb, var(--h2-accent) 14%, var(--h2-gray-200));
+}
+
+/* 三角：关 = 左边正立；开 = 绕斜边折到右边倒立 */
+body .checkbox-container::after,
+body .modal .checkbox-container::after,
+body:not(.is-mobile) .setting-group.mod-list .checkbox-container::after,
+body .checkbox-container.mod-small::after {
+  left: 0 !important;
+  top: 0 !important;
+  width: var(--h2-tgl-s) !important;
+  height: var(--h2-tgl-h) !important;
+  margin: 0 !important;
+  opacity: 1 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background-color: var(--h2-gray-400);
+  /* 三角用 SVG mask 而不是 clip-path：clip-path 在三维变换层上边缘不抗锯齿（顶边发毛），
+     mask 随图层栅格化，折叠到位后边缘仍然干净 */
+  -webkit-mask: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'><polygon points='50,0 0,100 100,100'/></svg>") center / 100% 100% no-repeat;
+  mask: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'><polygon points='50,0 0,100 100,100'/></svg>") center / 100% 100% no-repeat;
+  transform-origin: 50% 0;
+  transform: perspective(120px) rotate3d(0.5, 0.8660254, 0, 0deg) !important;
+  transition: transform var(--h2-duration-release) var(--h2-ease-spring),
+              background-color var(--h2-duration-base) var(--h2-ease) !important;
+}
+body .checkbox-container.is-enabled::after,
+body .modal .checkbox-container.is-enabled::after,
+body:not(.is-mobile) .setting-group.mod-list .checkbox-container.is-enabled::after,
+body .checkbox-container.mod-small.is-enabled::after {
+  background-color: var(--h2-accent);
+  transform: perspective(120px) rotate3d(0.5, 0.8660254, 0, 180deg) !important;
+}
+/* 按下：整个开关轻轻收一点（和全局按下反馈同族），不改三角几何 */
+body .checkbox-container:where(:not(.is-disabled)):active { transform: scale(0.96); }
+/* 焦点环：容器矩形外 3px，不被 clip-path 裁掉 */
+body .checkbox-container:focus-visible,
+body .modal .checkbox-container:focus-visible {
+  outline: 2px solid var(--h2-accent);
+  outline-offset: 3px;
+}
 
 
 /* ── Scrollbar（方形细化，去默认粗条）─────────────────────────
@@ -2207,6 +2492,16 @@ button.mod-cta.mobile-tap {
   animation: h2-emerge 150ms var(--h2-ease-signature);
 }
 
+/* ── 按下反馈：页签 / 树项 / 工具图标 / 菜单项只有 hover 没有 :active，
+   点击到动作落地之间零确认。opacity 瞬时变化，不加过渡（按下要即时）。
+   官方只给 .clickable-icon 和页签图标写了 :active（asar 7278/8368）。 */
+.workspace-tab-header:active,
+.tree-item-self:active,
+.clickable-icon:active,
+.menu-item:active {
+  opacity: 0.6;
+}
+
 
 /* ════════════════════════════════════════════════════════════
    W4 终止线。验收：作者实机触发 modal（Cmd+, 设置页）/ Cmd+P /
@@ -2278,6 +2573,22 @@ button.mod-cta.mobile-tap {
   border-radius: 0;
 }
 
+/* Live Preview 同款序列。上面写"LP 是文字字符改不了"已过时：Obsidian 1.14
+   的 LP 同样输出 .list-bullet 并用 :after 画方块（实测一级已是方块），层级由
+   行类 HyperMD-list-line-N 给出。此前 LP 三级全是实心方，与阅读模式的
+   实心方 → 空心方 → 短横不一致。 */
+.markdown-source-view.mod-cm6 .HyperMD-list-line-2 .list-bullet:after {
+  background-color: transparent;
+  border: 1px solid var(--list-marker-color);
+}
+.markdown-source-view.mod-cm6 :is(.HyperMD-list-line-3, .HyperMD-list-line-4, .HyperMD-list-line-5, .HyperMD-list-line-6, .HyperMD-list-line-7, .HyperMD-list-line-8) .list-bullet:after {
+  width: 8px;
+  height: 2px;
+  background-color: var(--list-marker-color);
+  border: none;
+  border-radius: 0;
+}
+
 
 /* ════════════════════════════════════════════════════════════
    W3 终止线。验收：作者实机看图标整体气质（侧边栏图标、设置页图标、
@@ -2292,8 +2603,9 @@ button.mod-cta.mobile-tap {
    完整版氢徽在 Phase 4 空状态（上方），徽记渗到日常 chrome：
      · 设置弹窗标题旁徽记版 ~24px（任务三，已落）
      · vault 栏设置按钮空心方氢徽 16px（T2b，签名与功能合一）
-   关系规则（任何尺寸重绘必守，顾问锁定）：① 面积序 方>圆>三角；
-     ② 三角尖端处于方圆交叠区（画眼）；③ 唯一红：只有三角红。
+   关系规则（任何尺寸重绘必守；v1.4 拱形口袋）：① 圆、方、红三角三个基本形，
+     不加线/环/刻度；② 圆压在方的上缘，方用负形扣出圆的外圈与右下斜缺口；
+     ③ 唯一红：只有三角红（缺口里留下的折角）。
    ⚠️ 红线：data URI 是内联资源、市场合规；禁止任何网络 URL。
         SVG 形状比例和颜色由徽记规范管，落码只调 background-size 和间距。
    asar 实测选择器：
@@ -2343,6 +2655,16 @@ body:not(.is-mobile) .workspace-split.mod-left-split .workspace-sidedock-vault-p
 }
 
 
+/* ── T2b（v2.0 改版）：设置按钮 = 字标 H₂ 的矢量版，主题红 ─────────
+   作者要求：把空标签页字标里的 H₂ 做成矢量，染成主题红，换掉设置按钮。
+   工法：用和空标签页字标完全相同的字体栈把「H₂」渲染成大图，potrace
+   描成两条精确路径（H 与下标 2，不依赖任何字体，Windows/Linux 同形），
+   data URI 内联；亮色 #D14A4A、暗色 #E5645F，背景图 14×12px 居中（热区 24×24，图形只占约 60%）。
+   图标里的 H 用 600 字重（字标是 500）：18px 下 H 的竖笔要和粗的下标 2 同重才稳。
+   空标签页里的字标仍是文字，颜色不动。
+   下面的旧注释（氢徽/滑轨/红点）是此前各版的历史，保留以免重蹈覆辙。
+   ──────────────────────────────────────────────────────────── */
+
 /* ── T2b：设置按钮复刻核心氢徽（三件俱全徽记版）──────────────
    v0.6.3：空心方版，作者觉得不好看，直接复刻最核心的氢徽——
    三件俱全的徽记版（方 Gray 200 / 圆 Gray 300 / 红三角），与空状态
@@ -2377,12 +2699,11 @@ body:not(.is-mobile) .workspace-split.mod-left-split .workspace-sidedock-vault-p
      获得功能叙事（当前值落点），仍是句读级一红。
      "红点系"构词法升级：灰几何体（名词）+ 红点（动作/落点）。
      几何：三轨 x[3,13] y=4.5/8/11.5，描边 1.75 圆帽；滑块 r2.25 @(10.5,8)。 */
-  background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><g stroke='%2378716C' stroke-width='1.75' stroke-linecap='round'><line x1='3' y1='4.5' x2='13' y2='4.5'/><line x1='3' y1='8' x2='13' y2='8'/><line x1='3' y1='11.5' x2='13' y2='11.5'/></g><circle cx='10.5' cy='8' r='2.25' fill='%23D14A4A' stroke='%23FAFAF9' stroke-width='1'/></svg>") no-repeat center / 18px 18px;   /* v0.8.8 三版：16→18px（作者反馈：小气了点） */
-  opacity: 0.85;
-  transition: opacity var(--h2-duration-fast) var(--h2-ease);
+  background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='145 196 675 587'><g transform='translate(0,1000) scale(0.1,-0.1)' fill='%23D14A4A'><path d='M1550 5460 l0 -2480 440 0 440 0 0 1100 0 1100 1155 0 1155 0 0 -1100 0 -1100 445 0 445 0 -2 2478 -3 2477 -440 0 -440 0 -3 -997 -2 -998 -1155 0 -1155 0 -2 998 -3 997 -437 3 -438 2 0 -2480z'/><path d='M6935 4769 c-479 -65 -815 -384 -815 -774 l0 -55 285 0 285 0 5 28 c42 205 179 312 401 312 329 0 468 -265 274 -522 -68 -89 -151 -162 -727 -632 l-493 -401 3 -225 2 -225 973 -3 972 -2 0 255 0 255 -559 2 -560 3 187 150 c822 661 905 767 889 1134 -13 324 -206 546 -567 654 -148 45 -408 66 -555 46z'/></g></svg>") no-repeat center / 14px 12px;
+  opacity: 1;
+  transition: background-color var(--h2-duration-fast) var(--h2-ease);
 }
 .workspace-drawer-vault-actions > .clickable-icon:last-child:hover {
-  opacity: 1;
   background-color: rgba(0, 0, 0, 0.05);   /* v0.7.3：hover 灰 tint 交互 */
 }
 
@@ -2396,10 +2717,10 @@ body:not(.is-mobile) .workspace-split.mod-left-split .workspace-sidedock-vault-p
 
 /* ── 任务三：设置弹窗标题旁徽记版（保留，已验收）────────────── */
 .modal.mod-settings .modal-title {
-  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><rect y='11' width='13' height='13' fill='%23E7E5E4'/><circle cx='14' cy='8' r='5' fill='%23D6D3D1'/><path d='M11 11.5 16 20.5 6 20.5Z' fill='%23D14A4A'/></svg>");
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='280' height='280' viewBox='56 20 168 240'><defs><mask id='body' maskUnits='userSpaceOnUse' x='0' y='0' width='280' height='280'><rect width='280' height='280' fill='white'/><circle cx='140' cy='104' r='88' fill='black'/><polygon points='128,264 228,164 228,264' fill='black'/></mask></defs><rect x='68' y='104' width='144' height='144' fill='%23E7E5E4' mask='url(%23body)'/><circle cx='140' cy='104' r='72' fill='%23D6D3D1'/><polygon points='164,248 212,200 212,248' fill='%23D14A4A'/></svg>");
   background-repeat: no-repeat;
   background-position: left center;
-  background-size: 24px;
+  background-size: 24px 24px;
   padding-left: 36px;
 }
 
@@ -2482,7 +2803,6 @@ body:not(.is-mobile) .workspace-leaf-resize-handle:hover {
    属性），同 S1 收起规则的 Folio 白屏规避条件。 */
 body:not(.is-mobile) .app-container:has(.workspace-split.mod-right-split > .workspace-leaf-resize-handle:hover) .status-bar {
   box-shadow: inset 3px 0 0 var(--h2-gray-300);
-  transition: box-shadow var(--h2-duration-fast) var(--h2-ease);
 }
 
 /* 状态栏并入右侧工具带底部，不再作为独立悬浮卡片。
@@ -2495,6 +2815,7 @@ body:not(.is-mobile) .app-container:has(.workspace-split.mod-right-split > .work
       规避 Folio v1.1.8 Canvas 白屏的触发条件（:has() + 隐藏规则）。 */
 body:not(.is-mobile) {
   --h2-status-bar-width: 440px;  /* 当前右工具带基准宽；允许用户覆写 */
+  --h2-status-bar-height: 60px;  /* 与左下 vault 栏齐高；右栏同值预留，见 .mod-right-split */
 }
 body:not(.is-mobile) .status-bar {
   background-color: var(--h2-bench);
@@ -2505,19 +2826,19 @@ body:not(.is-mobile) .status-bar {
   bottom: 0;
   right: 0;
   width: var(--h2-status-bar-width);
-  height: 60px;       /* v0.8.7：留冗余防三行裁切，与 vault 栏齐高 */
-  min-height: 60px;
-  max-height: 60px;
+  height: var(--h2-status-bar-height);   /* v0.8.7：留冗余防三行裁切，与 vault 栏齐高 */
+  min-height: var(--h2-status-bar-height);
+  max-height: var(--h2-status-bar-height);
   overflow: hidden;
-  padding: 4px 8px;
-  font-size: 10px;
+  padding: 4px 12px;
+  font-size: 11px;
   line-height: 1;
   display: flex;
   flex-wrap: wrap;
   align-content: center;
   justify-content: flex-end;
-  column-gap: 2px;
-  row-gap: 0;
+  column-gap: 8px;
+  row-gap: 4px;
   transition: opacity var(--h2-duration-base) var(--h2-ease),
               transform var(--h2-duration-base) var(--h2-ease);
 }
@@ -2525,7 +2846,7 @@ body:not(.is-mobile) .status-bar {
 body:not(.is-mobile) .status-bar-item {
   white-space: nowrap;
   min-height: 20px;
-  padding: 0 2px;
+  padding: 0 4px;
 }
 
 /* 状态栏不是右栏子元素，固定 px 永远无法跟随用户 resize。
@@ -2540,11 +2861,59 @@ body:not(.is-mobile) .status-bar-item {
   }
 }
 
-/* 右侧栏收起时，状态栏跟随隐藏（淡出 + 下滑） */
+/* 右侧栏收起时：状态栏整体退场，但"视图切换钮"（.plugin-editor-status，
+   阅读/编辑）单独留在右下角成圆形按钮——收起右栏后仍可一键切换模式。
+   其余条目（反向链接/属性/字数/同步）只用 opacity + pointer-events 退场，
+   并移出文档流（absolute），否则隐身条目会把按钮挤离右下角。
+   ⚠️ 仍然只做 opacity/pointer-events/定位，不用 display:none / visibility
+   （:has() 在 .app-container 级，沿用 Folio 白屏规避条件）。
+   阅读视图时顶栏被作者关掉的人（showViewHeader:false）没有别的切换入口，
+   这是这个按钮存在的理由。asar/CDP 实测类名：status-bar-item plugin-editor-status mod-clickable，
+   aria-label 为目标模式。 */
 body:not(.is-mobile) .app-container:has(.workspace:not(.is-right-sidedock-open)) > .status-bar {
+  position: fixed;
+  top: auto;
+  left: auto;
+  right: 12px;
+  bottom: 12px;
+  width: auto;
+  height: auto;
+  min-height: 0;
+  max-height: none;
+  padding: 0;
+  background-color: transparent;
+  overflow: visible;
+  pointer-events: none;
+}
+body:not(.is-mobile) .app-container:has(.workspace:not(.is-right-sidedock-open)) > .status-bar > .status-bar-item {
+  position: absolute;
   opacity: 0;
   pointer-events: none;
-  transform: translateY(8px);
+}
+body:not(.is-mobile) .app-container:has(.workspace:not(.is-right-sidedock-open)) > .status-bar > .status-bar-item.plugin-editor-status {
+  position: static;
+  opacity: 1;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  min-height: 28px;
+  padding: 0;
+  border-radius: 50%;
+  background-color: var(--h2-float);
+  border: 1px solid var(--h2-border);
+  box-shadow: var(--h2-shadow-2);
+  color: var(--h2-text-muted);
+  transition: color var(--h2-duration-fast) var(--h2-ease),
+              transform var(--h2-duration-fast) var(--h2-ease);
+}
+body:not(.is-mobile) .app-container:has(.workspace:not(.is-right-sidedock-open)) > .status-bar > .status-bar-item.plugin-editor-status:hover {
+  color: var(--h2-accent-hover);
+}
+body:not(.is-mobile) .app-container:has(.workspace:not(.is-right-sidedock-open)) > .status-bar > .status-bar-item.plugin-editor-status:active {
+  transform: scale(0.96);
 }
 
 /* ════════════════════════════════════════════════════════════
@@ -2579,6 +2948,13 @@ body:not(.is-mobile) .workspace-split.mod-right-split {
   border-left: 0;
   box-shadow: inset 1px 0 0 var(--h2-border);
   anchor-name: --h2-right-dock;
+  /* 状态栏是悬浮在右栏底部的 fixed 层，右栏内容不知道它的存在，
+     第三方插件贴底的 UI（Claudian 输入框、Git 提交框等）被它盖住
+     （实测输入框下沿被 60px 状态栏裁掉）。底部预留同高 padding，
+     内容在状态栏之上结束；padding 区垫 bench 底色与状态栏同色，
+     状态栏淡出时也不露洞。anchor 取的是 border box，状态栏位置不变。 */
+  padding-bottom: var(--h2-status-bar-height);
+  background-color: var(--h2-bench);
 }
 
 /* 工具带 tab 组不再重复套卡片。 */
@@ -2656,7 +3032,6 @@ body:not(.is-mobile) .workspace-split.mod-right-split .nav-header::before {
     linear-gradient(var(--h2-gray-300), var(--h2-gray-300)) 12px 0 / 4px 4px no-repeat,
     linear-gradient(var(--h2-gray-300), var(--h2-gray-300)) 24px 0 / 4px 4px no-repeat;
   flex-shrink: 0;
-  transition: background var(--h2-duration-fast) var(--h2-ease);
 }
 
 body:not(.is-mobile) .workspace-split.mod-left-split .nav-header:hover::before,
@@ -2937,7 +3312,9 @@ body:not(.is-mobile) .workspace-split.mod-left-split .workspace-sidedock-vault-p
    v0.4 的勾号是 border-width: 0 2px 2px 0（2px 描边），配合 W3 的
    全局 stroke-width 1.5 细线风，收一档到 0 1.5px 1.5px 0。
    勾选瞬间套 h2-emerge 脉冲（S3a 已落 keyframes）。 */
-.markdown-preview-view input[type=checkbox]:checked::after {
+/* A4 勾号几何与 LP 选择器已在 Phase 2 段落给全，这里只收细描边。 */
+.markdown-preview-view input[type=checkbox]:checked::after,
+.markdown-source-view.mod-cm6 input[type=checkbox]:checked::after {
   border-width: 0 1.5px 1.5px 0;   /* 半格允许，配合 W3 细线风 */
   width: 4px;
   height: 8px;
@@ -3112,20 +3489,17 @@ body {
   transform-origin: 50% 50%;
 }
 
-/* ── ③ 空白的瞬间：氢徽入场编舞 ──────────────────────────────
-   两拍叙事（双伪元素限制，方圆共层）：
-   第一拍 结构与日常落定（方+圆，0ms 起）；
-   第二拍 灵感冒尖（红三角，160ms 后浮出）。
-   backwards 填充让三角在延迟期完全不可见——"先有台，再冒尖"。 */
-/* v0.8.2：升 grand 时长 + 三角延迟 160→280ms（作者反馈原版偏快，
-   两拍之间要有可感知的呼吸）。 */
-.workspace-leaf-content[data-type="empty"] .empty-state::before {
-  animation: h2-badge-in var(--h2-duration-grand) var(--h2-ease-signature) backwards,
-             h2-float 6s var(--h2-ease) 1.2s infinite alternate;   /* v1.3.2 idle 呼吸：方+圆 6s 慢拍 */
+/* ── ③ 空白的瞬间：氢徽入场 ──────────────────────────────────
+   v1.4：拱形口袋是一件"纸面物件"，入场一拍（480ms 落纸：上浮 8px + 极轻缩放），
+   取消常驻呼吸——空标签页不再持续占用合成器。reduced-motion 由文件头兜底。 */
+body { --h2-duration-badge: 480ms; }
+.workspace-leaf-content[data-type="empty"] .empty-state-container::before {
+  animation: h2-paper-badge-in var(--h2-duration-badge) var(--h2-ease-signature) both;
+  transform-origin: 50% 60%;
 }
-.workspace-leaf-content[data-type="empty"] .empty-state::after {
-  animation: h2-badge-in var(--h2-duration-grand) var(--h2-ease-signature) 280ms backwards,
-             h2-float 4.5s var(--h2-ease) 1.6s infinite alternate; /* 三角 4.5s 快半拍，两层错频 */
+@keyframes h2-paper-badge-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.985); }
+  to { opacity: 1; transform: none; }
 }
 
 /* ════════════════════════════════════════════════════════════
@@ -3344,17 +3718,20 @@ body:not(.is-mobile) .workspace::after {
 
 /* ── 设置页左栏右沿签名竖线 ──────────────────────────────────
    替换设置 modal 侧栏与内容区之间的灰竖线。打开设置瞬间从上刷下。
-   v1.3.1：竖线同步地平线化（上下 10% 消隐 + 0.55 透明度），与横线同语言。 */
+   v1.3.1：竖线同步地平线化（上下 10% 消隐 + 0.55 透明度），与横线同语言。
+   ⚠️ 0.55 必须烤进渐变色，不能写 opacity：线画在 .vertical-tab-header 自身
+   的 background 上，元素 opacity 会把整列导航文字一起压到 55%——设置页
+   左栏"发淡"的真正根因（横线在 .workspace::after 上，不受此影响）。 */
 .modal.mod-settings .vertical-tab-header {
+  --h2-line-vertical: color-mix(in srgb, var(--h2-line-signature) 55%, transparent);
   border-right: none;
   background-image: linear-gradient(
     to bottom,
     transparent 0%,
-    var(--h2-line-signature) 10%,
-    var(--h2-line-signature) 90%,
+    var(--h2-line-vertical) 10%,
+    var(--h2-line-vertical) 90%,
     transparent 100%
   );
-  opacity: 0.55;
   background-repeat: no-repeat;
   background-position: right top;
   background-size: 1.5px 100%;
@@ -4043,3 +4420,986 @@ li:is([data-task="/"],[data-task="-"],[data-task="!"],[data-task="?"],[data-task
    渲染对应图标（阅读模式 + Live Preview），灰阶三档清晰，
    取消态文字删除线，默认 [x] 仍是红圆 + 墨滴动画（不受影响）。
    ════════════════════════════════════════════════════════════ */
+
+
+
+/* ════════════════════════════════════════════════════════════
+   DARK MODE 起点（以下全部为 body.theme-dark 规则）
+   v1.4：亮色之外新增暗色。token 层整段镜像 body.theme-light，
+   组件层只覆盖写死颜色字面量的规则。改亮色组件时若引入新的 raw 颜色，
+   请同步在此补暗色对应。
+   ════════════════════════════════════════════════════════════ */
+
+/* ============================================================
+   H2 OS — DARK MODE（独立片段，追加于 theme.css 之后）
+   同一套几何语法与纪律，暖 stone 夜色版：
+   paper #1F1C1A · bench 低一档 · hairline 白 8% · 红 #E5645F（提亮）
+   方法：整段镜像 body.theme-light 的 token 层（结构 token 原样保留），
+   再逐个覆盖组件层写死的 raw 颜色字面量。
+   ============================================================*/
+
+
+/* ════════════════════════════════════════════════════════════
+   TOKENS · 暗色模式
+   primitive 色阶 → semantic 语义别名 → Obsidian 原生变量映射。
+   与亮色块一一对应；结构性 token（尺寸/圆角/描边宽）原样保留，
+   只换色值。
+   ════════════════════════════════════════════════════════════ */
+
+body.theme-dark {
+  background-color: #1F1C1A;  /* 窗口 resize 时最先涂的颜色，消除白闪 */
+  color-scheme: dark;
+
+  /* ── primitive：原始色阶 ─────────────────────────────────── */
+
+  /* 暖灰阶（stone 暗色版）：数字后缀沿用亮色的"视觉重量"序 */
+  --h2-white:    #1F1C1A;  /* 画布纸色（paper） */
+  --h2-gray-50:  #292522;  /* 抬升面：dropdown / hover / primary-alt */
+  --h2-gray-100: #1A1714;  /* 沉界面：secondary surface、bench 同族 */
+  --h2-gray-200: #38322D;  /* 控件底：toggle/slider track */
+  --h2-gray-300: #57534E;  /* 控件描边、scrollbar、结构灰 */
+  --h2-gray-400: #78716C;  /* 图标、禁用、focus 圈（≈3.0:1，不可做正文） */
+  --h2-gray-500: #A8A29E;  /* 次要文字（6.8:1，达 AA） */
+  --h2-gray-600: #D6D3D1;  /* 正文（11.5:1） */
+  --h2-gray-700: #E7E5E4;
+  --h2-gray-900: #F5F5F4;  /* 标题、主文字（15.7:1） */
+
+  /* 降饱和一加红：暗色提亮，点缀用 */
+  --h2-red-300: #8A3A36;   /* 深红，tint 底色级 */
+  --h2-red-400: #D95750;
+  --h2-red-500: #E5645F;   /* 强调统帅色（5.2:1，可做文字） */
+  --h2-red-600: #EC7B72;   /* hover（6.3:1） */
+
+  /* Callout 语义色（暗色提亮，保持低饱和） */
+  --h2-sky:     #7CA6C4;   /* info（6.6:1） */
+  --h2-amber:   #D3A65A;   /* warning（7.6:1） */
+  --h2-crimson: #D4726C;   /* error / danger（5.4:1） */
+  --h2-sage:    #8AB584;   /* success / tip（7.4:1） */
+
+  /* ── semantic：语义别名 ───────────────────────────────────── */
+
+  --h2-accent:         var(--h2-red-500);
+  --h2-accent-hover:   var(--h2-red-600);
+  --h2-accent-tint:    var(--h2-red-300);
+
+  /* 背景：暗色的"层级"方向与亮色相反——浮起靠更亮，下沉靠更暗 */
+  --h2-bg:             var(--h2-white);       /* paper 主背景 */
+  --h2-bg-subtle:      var(--h2-gray-50);     /* primary-alt */
+  --h2-bg-surface:     var(--h2-gray-100);    /* 侧边栏、二级表面 */
+  --h2-bg-elevated:    var(--h2-gray-50);     /* 弹窗、浮层（暗色靠明度抬升） */
+
+  --h2-text:           var(--h2-gray-900);
+  --h2-text-body:      var(--h2-gray-600);
+  --h2-text-muted:     var(--h2-gray-500);
+  --h2-text-faint:     var(--h2-gray-400);
+
+  /* hairline：白 8%，强边 14% */
+  --h2-border:         rgba(255, 255, 255, 0.08);
+  --h2-border-strong:  rgba(255, 255, 255, 0.14);
+  --h2-line-signature: rgba(229, 100, 95, 0.7);
+
+  /* 阴影：暗色需要更重的纯黑阴影才能读出面层 */
+  --h2-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --h2-shadow-2: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --h2-shadow-3: 0 12px 32px rgba(0, 0, 0, 0.5);
+  --background-modifier-box-shadow: rgba(0, 0, 0, 0.4);
+
+  /* ── 映射给 Obsidian 原生变量 ─────────────────────────────── */
+
+  --background-primary:             var(--h2-bg);
+  --background-primary-alt:         var(--h2-bg-subtle);
+  --background-secondary:           var(--h2-bg-surface);
+  --background-secondary-alt:       #26211E;
+  --background-modifier-border:     var(--h2-border);
+  --background-modifier-border-hover: var(--h2-border-strong);
+  --background-modifier-border-focus: var(--h2-gray-400);
+  --background-modifier-form-field: var(--h2-white);
+  --background-modifier-form-field-highlighted: var(--h2-gray-50);
+  --background-modifier-success:    rgba(138, 181, 132, 0.16);  /* sage tint */
+  --background-modifier-error:      rgba(212, 114, 108, 0.16);  /* crimson tint */
+  --background-modifier-cover:      rgba(15, 13, 11, 0.85);
+  /* tooltip/notice 与亮色镜像：暗界面上的浅气泡 */
+  --background-modifier-message:    var(--h2-gray-900);
+  --tooltip-color:                  var(--h2-bg);
+  --divider-color:                  var(--h2-border);
+
+  /* 文字层级 */
+  --text-normal:        var(--h2-text-body);
+  --text-muted:         var(--h2-text-muted);
+  --text-faint:         var(--h2-text-faint);
+  /* on-accent 反转：暗色里红底上压纸色字（5.1:1），白字只有 3.3:1 */
+  --text-on-accent:     var(--h2-bg);
+  --text-on-accent-inverted: var(--h2-white);
+  --text-error:         var(--h2-crimson);
+  --text-success:       var(--h2-sage);
+  --text-highlight-bg:  rgba(229, 100, 95, 0.30);
+  --text-highlight-bg-rgb: 229, 100, 95;
+  --text-accent:        var(--h2-accent);
+  --text-accent-hover:  var(--h2-accent-hover);
+  --text-selection:     rgba(229, 100, 95, 0.32);
+
+  --caret-color:        var(--h2-accent);
+
+  /* 强调色 */
+  --interactive-accent:        var(--h2-accent);
+  --interactive-accent-hover:  var(--h2-accent-hover);
+  --interactive-accent-rgb:    229, 100, 95;
+  --interactive-normal:        var(--h2-gray-50);
+  --interactive-hover:         var(--h2-gray-200);
+
+  --color-accent:    var(--h2-accent);
+  --color-accent-1:  rgba(229, 100, 95, 0.24);
+  --color-accent-2:  rgba(229, 100, 95, 0.14);
+
+  /* 浮出物：暗色靠明度抬升（阴影在暗底下几乎不可见） */
+  --menu-background:        var(--h2-bg-elevated);
+  --modal-background:       var(--h2-bg-elevated);
+  --prompt-background:      var(--h2-bg-elevated);
+  --suggestion-background:  var(--h2-bg-elevated);
+
+  /* 标题颜色：层级靠字号字重，不靠颜色 */
+  --h1-color: var(--h2-text);
+  --h2-color: var(--h2-text);
+  --h3-color: var(--h2-text);
+  --h4-color: var(--h2-text);
+  --h5-color: var(--h2-text-body);
+  --h6-color: var(--h2-text-muted);
+
+  /* 链接 */
+  --link-color:          var(--h2-text);
+  --link-color-hover:    var(--h2-accent);
+  --link-decoration:     underline;
+  --link-decoration-hover: underline;
+  --link-decoration-color:      rgba(214, 211, 209, 0.35);
+  --link-decoration-color-hover: var(--h2-accent);
+  --link-external-color:        var(--h2-text);
+  --link-external-color-hover:  var(--h2-accent);
+  --link-external-decoration:   underline;
+  --link-external-decoration-hover: underline;
+  --link-unresolved-color:      var(--h2-text-faint);
+  --link-unresolved-decoration: underline;
+  --link-unresolved-decoration-color: rgba(168, 162, 158, 0.4);
+
+  /* 导航 tint：暗色镜像为白 alpha */
+  --nav-item-background-hover:    rgba(255, 255, 255, 0.05);
+  --nav-item-background-active:   rgba(255, 255, 255, 0.09);
+  --nav-item-background-selected: rgba(255, 255, 255, 0.09);
+  --nav-item-color:               var(--h2-text-muted);
+  --nav-item-color-hover:         var(--h2-text);
+  --nav-item-color-active:        var(--h2-accent);
+  --nav-item-color-selected:      var(--h2-text);
+
+  /* 图标 */
+  --icon-color:        var(--h2-text-faint);
+  --icon-color-hover:  var(--h2-text-muted);
+  --icon-color-active: var(--h2-accent);
+  --icon-color-focused: var(--h2-accent);
+
+  /* 标签页 */
+  --tab-text-color-focused:             var(--h2-text-muted);
+  --tab-text-color-focused-active:      var(--h2-text);
+  --tab-text-color-focused-active-current: var(--h2-accent);
+  --tab-background-active:              transparent;
+  --tab-outline-color:                  var(--h2-border);
+  --tab-outline-width:                  1px;
+  --tab-divider-color:                  transparent;
+
+  --nav-indentation-guide-color:        rgba(255, 255, 255, 0.08);
+
+  /* 标签：方形结构片（token 原样，颜色跟走） */
+  --tag-background:        transparent;
+  --tag-background-hover:  transparent;
+  --tag-color:             var(--h2-text-body);
+  --tag-color-hover:       var(--h2-text);
+  --tag-radius:            0;
+  --tag-border-width:      1px;
+  --tag-border-color:      var(--h2-border);
+  --tag-border-color-hover: var(--h2-gray-400);
+
+  /* 滑块 */
+  --slider-track-background:   var(--h2-gray-200);
+  --slider-track-height:       4px;
+  --slider-thumb-border-color: transparent;
+  --slider-thumb-color:        var(--h2-accent);
+
+  /* Scrollbar */
+  --scrollbar-bg:        transparent;
+  --scrollbar-thumb-bg:  var(--h2-gray-300);
+
+  /* Checkbox：圆形，选中红填充；勾号用纸色（红底上 5.1:1） */
+  --checkbox-radius:         50%;
+  --checkbox-size:           16px;
+  --checkbox-border-width:   1.5px;
+  --checkbox-border-color:       var(--h2-gray-300);
+  --checkbox-border-color-hover: var(--h2-accent);
+  --checkbox-color:              var(--h2-accent);
+  --checkbox-color-hover:        var(--h2-accent-hover);
+  --checkbox-marker-color:       var(--h2-bg);
+
+  /* Toggle */
+  --toggle-radius:           18px;
+  --toggle-thumb-radius:     14px;
+  --toggle-width:            36px;
+  --toggle-thumb-width:      14px;
+  --toggle-thumb-height:     14px;
+  --toggle-border-color:     var(--h2-gray-300);
+  --toggle-background-color: var(--h2-gray-200);
+  --toggle-thumb-color:      #FAF9F8;   /* thumb 保持浅色，off 态灰轨上可读 */
+  --toggle-color:            var(--h2-accent);
+  --toggle-color-hover:      var(--h2-accent-hover);
+
+  /* Callout 语义色映射 */
+  --callout-color-info:        var(--h2-sky);
+  --callout-color-warning:     var(--h2-amber);
+  --callout-color-error:       var(--h2-crimson);
+  --callout-color-danger:      var(--h2-crimson);
+  --callout-color-success:     var(--h2-sage);
+  --callout-color-tip:         var(--h2-sage);
+  --callout-color-question:    var(--h2-amber);
+  --callout-color-abstract:    var(--h2-sky);
+  --callout-color-summary:     var(--h2-sky);
+  --callout-color-quote:       var(--h2-gray-500);
+  --callout-color-example:     var(--h2-accent);
+
+  /* 代码块语法高亮：同色相分工，暗色提亮版 */
+  --code-background:         #292522;
+  --code-normal:             var(--h2-text);
+  --code-comment:            var(--h2-text-faint);
+  --code-keyword:            var(--h2-sky);
+  --code-function:           var(--h2-sky);
+  --code-string:             var(--h2-sage);
+  --code-number:             var(--h2-amber);
+  --code-tag:                var(--h2-sky);
+  --code-operator:           var(--h2-text-body);
+  --code-attr:               var(--h2-amber);
+  --code-property:           var(--h2-sky);
+  --code-value:              var(--h2-sage);
+  --code-punctuation:        var(--h2-text-muted);
+
+  /* 表格 */
+  --table-header-border:    1px solid var(--h2-border);
+  --table-border-width:     0px;
+  --table-header-background: transparent;
+  --table-text-size:        0.875rem;
+  --table-line-height:      1.45;
+  --table-header-size:      0.75rem;
+  --table-header-weight:    500;
+  --table-header-color:     var(--h2-text-muted);
+  --table-row-background-hover: var(--h2-gray-50);
+
+  /* Blockquote */
+  --blockquote-border-thickness: 3px;
+  --blockquote-border-color:     var(--h2-gray-300);
+
+  /* 嵌入块 */
+  --embed-background:      var(--h2-bg);
+  --embed-border-start:    1px solid var(--h2-border);
+  --embed-border-end:      1px solid var(--h2-border);
+  --embed-border-top:      1px solid var(--h2-border);
+  --embed-border-bottom:   1px solid var(--h2-border);
+  --embed-font-style:      normal;
+
+  /* 设置页 */
+  --setting-items-background:    transparent;
+  --setting-items-border-width:  0px;
+  --setting-items-border-color:  transparent;
+  --setting-items-radius:        0;
+  --setting-items-padding:       0.75rem 0;
+  --setting-group-heading-color:   var(--h2-text);
+  --setting-group-heading-size:    var(--h2-font-size-base);
+  --setting-group-heading-weight:  600;
+
+  /* 控件家族 */
+  --input-shadow:          inset 0 0 0 1px var(--h2-border);
+  --input-shadow-hover:    inset 0 0 0 1px var(--h2-border-strong);
+  --input-focus-border-color: var(--h2-gray-400);
+  --input-radius:           var(--radius-m);
+  --search-input-radius:    var(--input-radius);
+  --input-height:           32px;
+
+  --dropdown-background:        var(--h2-gray-50);
+  --dropdown-background-hover:  rgba(255, 255, 255, 0.05);
+
+  --button-radius:                       var(--radius-m);
+  --button-secondary-bg-color:           transparent;
+  --button-secondary-hover-bg-color:     var(--h2-gray-50);
+  --button-secondary-active-bg-color:    var(--h2-gray-100);
+  --button-secondary-border-color:       var(--h2-border);
+  --button-secondary-hover-border-color: var(--h2-border-strong);
+
+  --slider-thumb-width:         14px;
+  --slider-thumb-height:        14px;
+  --slider-thumb-radius:        50%;
+  --slider-thumb-border-width:  0px;
+  --slider-thumb-y:             -5px;
+
+  --scrollbar-width:            8px;
+  --scrollbar-height:           8px;
+  --scrollbar-radius:           0;
+  --scrollbar-active-thumb-bg:  var(--h2-gray-400);
+
+  /* 图标层细线（结构 token，原样保留） */
+  --icon-xs-stroke-width: 1.5px;
+  --icon-s-stroke-width:  1.5px;
+  --icon-m-stroke-width:  1.25px;
+  --icon-l-stroke-width:  1.25px;
+  --icon-xl-stroke-width: 1px;
+
+  /* list-bullet：方块序列（结构 token，原样保留） */
+  --list-marker-color:           var(--h2-text-faint);
+  --list-marker-color-collapsed: var(--h2-text-muted);
+  --list-bullet-radius:          0;
+  --list-bullet-size:            4px;
+  --list-bullet-border:          none;
+}
+
+
+/* ════════════════════════════════════════════════════════════
+   暗色 · 空间结构 token 补丁
+   bench 在亮色 = Gray 50（浅于纸）；暗色按"工具带比纸低一档"
+   显式改沉，不能跟 gray-50 的抬升方向走。
+   ════════════════════════════════════════════════════════════ */
+body.theme-dark:not(.is-mobile) {
+  --h2-bench: #1A1714;
+}
+
+/* 半透明模式：bench 让位成玻璃（与亮色同规则，防特异性被压回） */
+body.theme-dark.is-translucent:not(.is-fullscreen) {
+  --h2-bench: transparent;
+}
+
+
+/* ════════════════════════════════════════════════════════════
+   暗色 · 纸感噪点
+   亮色是黑噪压纸感；暗色镜像为白噪（3.5%），像暗房里的相纸颗粒。
+   ════════════════════════════════════════════════════════════ */
+body.theme-dark::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='matrix' values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.6 0'/></filter><rect width='240' height='240' filter='url(%23n)'/></svg>");
+  background-size: 240px 240px;
+}
+
+@media print {
+  body.theme-dark::after { display: none; }
+}
+
+
+/* ════════════════════════════════════════════════════════════
+   暗色 · 组件层 raw 颜色覆盖
+   theme.css 组件规则里写死的颜色字面量（不走 token 的部分），
+   逐条给出暗色对应。选择器与原规则一致 + body.theme-dark 前缀
+   提特异性；原规则带 !important 的这里同样带。
+   ════════════════════════════════════════════════════════════ */
+
+/* 当前行高亮：暖黑 2.8% → 白 3% */
+body.theme-dark .markdown-source-view.mod-cm6 .cm-activeLine {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+/* 红字渐隐渐变 ×3：末端 alpha 0.62 → 0.72（暗纸上 0.62 尾端只有 2.8:1，
+   低于 3:1 可读线；0.72 实测 ≈3.3:1）。前段走 token 自动提亮。 */
+body.theme-dark .tree-item-self.is-active .tree-item-inner,
+body.theme-dark .nav-file-title.is-active .nav-file-title-content,
+body.theme-dark .nav-folder-title.is-active .nav-folder-title-content {
+  background: linear-gradient(to right,
+    var(--h2-accent-hover) 0%,
+    var(--h2-accent) 55%,
+    rgba(229, 100, 95, 0.72) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+body.theme-dark .workspace .mod-root .workspace-tab-header.is-active .workspace-tab-header-inner-title {
+  background: linear-gradient(to right,
+    var(--h2-accent-hover) 0%,
+    var(--h2-accent) 55%,
+    rgba(229, 100, 95, 0.72) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+body.theme-dark .modal.mod-settings .vertical-tab-nav-item.is-active .vertical-tab-nav-item-title {
+  background: linear-gradient(to right,
+    var(--h2-accent-hover) 0%,
+    var(--h2-accent) 55%,
+    rgba(229, 100, 95, 0.72) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* 签名 SVG 图标三件套（pinned tab / vault 设置钮 / 设置弹窗标题徽记）：
+   data-URI 内颜色是死值，逐个换暗色版——灰件提亮、红件换 #E5645F、
+   白色衬底换纸色。 */
+body.theme-dark .workspace-tab-header .workspace-tab-header-status-icon.mod-pinned {
+  background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M3.5 5.5 13.5 5.5 8.5 13Z' fill='none' stroke='%23A8A29E' stroke-width='1.75' stroke-linejoin='round'/><circle cx='4.5' cy='4.5' r='3.25' fill='%23E5645F'/></svg>") no-repeat center / contain;
+}
+body.theme-dark .workspace-drawer-vault-actions > .clickable-icon:last-child {
+  background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='145 196 675 587'><g transform='translate(0,1000) scale(0.1,-0.1)' fill='%23E5645F'><path d='M1550 5460 l0 -2480 440 0 440 0 0 1100 0 1100 1155 0 1155 0 0 -1100 0 -1100 445 0 445 0 -2 2478 -3 2477 -440 0 -440 0 -3 -997 -2 -998 -1155 0 -1155 0 -2 998 -3 997 -437 3 -438 2 0 -2480z'/><path d='M6935 4769 c-479 -65 -815 -384 -815 -774 l0 -55 285 0 285 0 5 28 c42 205 179 312 401 312 329 0 468 -265 274 -522 -68 -89 -151 -162 -727 -632 l-493 -401 3 -225 2 -225 973 -3 972 -2 0 255 0 255 -559 2 -560 3 187 150 c822 661 905 767 889 1134 -13 324 -206 546 -567 654 -148 45 -408 66 -555 46z'/></g></svg>") no-repeat center / 14px 12px;
+}
+body.theme-dark .workspace-drawer-vault-actions > .clickable-icon:last-child:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+body.theme-dark .modal.mod-settings .modal-title {
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='280' height='280' viewBox='56 20 168 240'><defs><mask id='body' maskUnits='userSpaceOnUse' x='0' y='0' width='280' height='280'><rect width='280' height='280' fill='white'/><circle cx='140' cy='104' r='88' fill='black'/><polygon points='128,264 228,164 228,264' fill='black'/></mask></defs><rect x='68' y='104' width='144' height='144' fill='%2357534E' mask='url(%23body)'/><circle cx='140' cy='104' r='72' fill='%2378716C'/><polygon points='164,248 212,200 212,248' fill='%23E5645F'/></svg>");
+}
+
+/* 命令面板/建议弹窗选中项：红 tint 在暗纸上加深才可见 */
+body.theme-dark .suggestion-item.is-selected {
+  background-color: rgba(229, 100, 95, 0.18) !important;
+  color: var(--h2-text);
+}
+
+/* 拖放悬停接住态 */
+body.theme-dark .is-being-dragged-over {
+  background-color: rgba(229, 100, 95, 0.12) !important;
+}
+
+/* 搜索匹配：扫入渐变 / 文档内匹配 / 当前匹配，暗纸全部加深 */
+body.theme-dark .search-result-file-matched-text {
+  background-image: linear-gradient(
+    rgba(229, 100, 95, 0.28), rgba(229, 100, 95, 0.28));
+}
+body.theme-dark .markdown-source-view.mod-cm6 .cm-searchMatch {
+  background-color: rgba(229, 100, 95, 0.22);
+}
+body.theme-dark .markdown-source-view.mod-cm6 .cm-searchMatch-selected {
+  background-color: rgba(229, 100, 95, 0.38);
+  /* h2-match-flash keyframe 的末帧是亮色 0.18，暗色播放完会闪回，
+     暗色下关闭这一处闪烁（选中态保持稳定 0.38） */
+  animation: none;
+}
+
+/* popover（hover 预览/自动补全）：asar 实测 bg 写死 var(--background-primary)，
+   无 token 可接，组件层抬到 elevated */
+body.theme-dark .popover,
+body.theme-dark .cm-tooltip.cm-tooltip-autocomplete {
+  background-color: var(--h2-bg-elevated);
+}
+
+/* tooltip：色在 token 层（--background-modifier-message/--tooltip-color），
+   这里只换写死的暖黑阴影 */
+body.theme-dark .tooltip {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+
+/* ════════════════════════════════════════════════════════════
+   暗色 · 打印回钉
+   theme.css 的打印规则按"白纸深字"设计并引用 --h2-* token；
+   暗色下 token 已翻转（gray-900=近白），直接打印会白字上白纸。
+   打印时把打印规则消费到的 token 回钉为亮色值——打印输出永远浅色。
+   ════════════════════════════════════════════════════════════ */
+@media print {
+  body.theme-dark {
+    --h2-white:    #FFFFFF;
+    --h2-gray-50:  #FAFAF9;
+    --h2-gray-400: #A8A29E;
+    --h2-gray-500: #78716C;
+    --h2-gray-600: #57534E;
+    --h2-gray-700: #44403C;
+    --h2-gray-900: #1C1917;
+    --h2-bg:       var(--h2-white);
+    --h2-border:   #E7E5E4;
+    --h2-accent:        #D14A4A;
+    --h2-accent-hover:  #B83A3A;
+    --h2-sky:     #5B8FB9;
+    --h2-amber:   #C99A4A;
+    --h2-crimson: #B85555;
+    --h2-sage:    #6B9B6B;
+  }
+}
+
+
+/* H2 OS 2.0 study: Vera B layout, Kai paper surfaces, Finn feedback. */
+/* B: Margin Atlas. Standalone append-only fragment: shared A foundation plus structural overrides below. */
+/* A · Quiet Paper / 静页。Append to the baseline theme.css, do not replace it.
+   Overrides: body tokens; .inline-title; markdown headings; .metadata-*;
+   .multi-select-pill; .prompt*; .suggestion-item; .modal.mod-settings;
+   body::after noise opacity. All component classes observed via CDP / app.css.
+   Empty-state emblem selectors and primitive geometry colours remain untouched. */
+body {
+  --h2-space-unit: 4px;
+  --h2-scale-0: 12px;
+  --h2-scale-1: 16px;
+  --h2-scale-2: 20px;
+  --h2-scale-3: 28px;
+  --h2-scale-4: 36px;
+  --h2-scale-5: 48px;
+  --h2-scale-6: 64px;
+  --h2-scale-7: 84px;
+  --h2-font-display: 'Avenir Next', 'Poppins', 'Montserrat', 'Jost', 'Segoe UI Variable', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, 'Source Han Sans SC', 'Noto Sans CJK SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --h2-font-reading: var(--h2-font-display);
+  --h2-font-system: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', system-ui, sans-serif;
+  --font-text-theme: var(--h2-font-reading);
+  --font-heading-theme: var(--h2-font-display);
+  --font-interface-theme: var(--h2-font-system);
+  --font-monospace-theme: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  --h2-font-size-base: var(--h2-scale-1);
+  --h2-line-height-body: 1.75;
+  --h2-line-height-heading: 1.333333;
+  --inline-title-size: var(--h2-scale-7);
+  --inline-title-line-height: 1.333333;
+  --inline-title-weight: 400;
+  --h1-size: var(--h2-scale-5);
+  --h2-size: var(--h2-scale-4);
+  --h3-size: var(--h2-scale-3);
+  --h4-size: var(--h2-scale-2);
+  --h5-size: var(--h2-scale-1);
+  --h6-size: var(--h2-scale-0);
+  --h1-line-height: 1.333333;
+  --h2-line-height: 1.333333;
+  --h3-line-height: 1.285714;
+  --h4-line-height: 1.4;
+  --h5-line-height: 1.5;
+  --h6-line-height: 1.666667;
+  --h1-weight: 500;
+  --h2-weight: 500;
+  --h3-weight: 600;
+  --h4-weight: 600;
+  --h5-weight: 600;
+  --h6-weight: 600;
+  --h1-letter-spacing: -0.035em;
+  --h2-letter-spacing: -0.025em;
+  --h3-letter-spacing: -0.02em;
+  --heading-spacing: 36px;
+  --p-spacing: 16px;
+  --list-spacing: 8px;
+  --file-line-width: 800px;   /* 限制行宽开启时的纸宽（正文 704px）；带属性的宽窗口版面见页边图谱段，放宽到 1160 */
+  --file-margins: 48px 48px;
+  --metadata-label-font-size: 12px;
+  --metadata-input-font-size: 12px;
+  --metadata-label-width: 84px;
+  --metadata-gap: 8px;
+  --metadata-input-height: 28px;
+  --metadata-property-padding: 0;
+  --metadata-property-radius: 0;
+  --metadata-label-text-color: var(--h2-text-muted);
+  --metadata-input-text-color: var(--h2-text-body);
+  --checkbox-size: 20px;
+  --tag-radius: 100vw;
+  --tag-size: 12px;
+  --tag-padding-x: 8px;
+  --tag-padding-y: 2px;
+  --h2-nav-pad-left: 24px;   /* 原生值：箭头住在 24px 的左槽里，嵌套层才有清晰的缩进 */
+  --nav-item-padding: var(--size-4-1) var(--size-4-2) var(--size-4-1) var(--h2-nav-pad-left);   /* 原生：4px 8px 4px 24px，行高比 2.0 初版矮约 8px */
+  /* 折叠竖线必须落在折叠箭头正下方。Obsidian 的几何：箭头绝对定位在行内容区
+     左缘 −20px、宽 16px，中心 = 行左缘 + (padding-left − 12px)；竖线是子级容器
+     的左边框，所以子级 margin 必须等于 padding-left − 12px（默认 24px/12px 成立）。
+     只改 --nav-item-padding 而不跟着改这里，竖线会偏离箭头（2.0 合成时出过一次）。
+     回归检查见 dev/render-harness/regress.mjs。 */
+  --nav-item-children-margin-start: calc(var(--h2-nav-pad-left) - 12px);
+  --tab-font-size: 12px;
+  --tab-font-weight: 500;
+  --prompt-width: 840px;
+  --prompt-max-width: 92vw;
+  --prompt-input-height: 84px;
+  --h2-duration-fast: 120ms;
+  --h2-duration-base: 180ms;
+  --h2-duration-slow: 240ms;
+  letter-spacing: 0;
+}
+body.theme-light {
+  --h2-paper: #FBFAF7;
+  --h2-bench: #EFEDE8;
+  --h2-float: #FEFDFB;
+  --h2-bg: var(--h2-paper);
+  --h2-bg-subtle: #F4F2ED;
+  --h2-bg-surface: var(--h2-bench);
+  --h2-bg-elevated: var(--h2-float);
+  --h2-text: #272523;
+  --h2-text-body: #4E4A46;
+  --h2-text-muted: #6F6861;
+  --h2-border: #DBD6CE;
+  --h2-border-strong: #BBB3A9;
+  --h2-shadow-1: none;
+  --h2-shadow-2: 0 4px 16px rgba(28, 25, 23, 0.06);
+  --h2-shadow-3: 0 12px 32px rgba(28, 25, 23, 0.08);
+  --background-modifier-form-field: var(--h2-paper);
+  --background-modifier-cover: rgba(239, 237, 232, 0.72);
+  background-color: var(--h2-paper);
+}
+body.theme-dark {
+  --h2-paper: #24211F;
+  --h2-bench: #191715;
+  --h2-float: #302B27;
+  --h2-bg: var(--h2-paper);
+  --h2-bg-subtle: #2B2723;
+  --h2-bg-surface: var(--h2-bench);
+  --h2-bg-elevated: var(--h2-float);
+  --h2-text: #F0EBE2;
+  --h2-text-body: #CEC6BB;
+  --h2-text-muted: #A69C90;
+  --h2-border: #423B34;
+  --h2-border-strong: #675C50;
+  --h2-shadow-1: none;
+  --h2-shadow-2: 0 4px 16px rgba(15, 13, 11, 0.24);
+  --h2-shadow-3: 0 12px 32px rgba(15, 13, 11, 0.32);
+  --background-modifier-form-field: var(--h2-paper);
+  --background-modifier-cover: rgba(25, 23, 21, 0.76);
+  background-color: var(--h2-paper);
+}
+body.theme-light::after,
+body.theme-dark::after { opacity: 0.025; }
+.inline-title {
+  font-family: var(--h2-font-display);
+  font-size: var(--inline-title-size);
+  font-weight: var(--inline-title-weight);
+  line-height: var(--inline-title-line-height);
+  letter-spacing: -0.045em;
+  overflow-wrap: anywhere;
+  margin-top: 0;
+  margin-bottom: 64px;
+}
+.inline-title::after { margin-top: 36px; }
+.markdown-preview-view h1,
+.markdown-source-view.mod-cm6 .HyperMD-header-1 {
+  letter-spacing: var(--h1-letter-spacing);
+}
+.metadata-container {
+  --metadata-label-text-color: var(--h2-text-muted);
+  --metadata-input-text-color: var(--h2-text-body);
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--h2-border);
+  border-bottom: 1px solid var(--h2-border);
+  border-radius: 0;
+  padding: 16px 0;
+  margin-bottom: 48px;
+  font-family: var(--h2-font-system);
+  font-size: 12px;
+  line-height: 20px;
+}
+.metadata-properties { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 24px; }
+.metadata-property { min-width: 0; min-height: 28px; }
+.multi-select-pill { border-radius: 100vw; padding: 2px 8px; }
+.prompt {
+  background: var(--h2-float);
+  border: 1px solid var(--h2-border);
+  border-radius: 8px;
+  box-shadow: var(--h2-shadow-3);
+}
+.prompt-input-container { padding: 12px 24px; }
+.prompt input.prompt-input { padding: 0; font-size: 36px; line-height: 48px; font-weight: 400; }
+.prompt-results { padding: 12px; }
+.prompt .suggestion-item { min-height: 48px; padding: 12px; border-radius: 4px; }
+body:is(.theme-light, .theme-dark) .prompt .suggestion-item.is-selected {
+  background: var(--h2-bg-subtle) !important;
+  color: var(--h2-text);
+  border-radius: 24px;
+}
+.prompt-instructions { padding: 16px; border-top: 1px solid var(--h2-border); }
+.modal.mod-settings { background: var(--h2-paper); box-shadow: var(--h2-shadow-3); }
+.modal.mod-settings .vertical-tab-header { background: var(--h2-bench); }
+.modal.mod-settings .vertical-tab-content { background: var(--h2-paper); }
+.modal.mod-settings .setting-item { padding-top: 16px; padding-bottom: 16px; }
+.modal.mod-settings .setting-item-heading .setting-item-name { font-size: 28px; line-height: 36px; font-weight: 500; letter-spacing: -0.02em; text-transform: none; }
+/* Baseline component declarations override heading tokens; bind both DOMs explicitly. */
+.markdown-preview-view h1,
+.markdown-source-view.mod-cm6 .HyperMD-header-1 { font-family: var(--h2-font-display); font-weight: var(--h1-weight) !important; line-height: var(--h1-line-height) !important; }
+.markdown-preview-view h2,
+.markdown-source-view.mod-cm6 .HyperMD-header-2 { font-family: var(--h2-font-display); font-weight: var(--h2-weight) !important; line-height: var(--h2-line-height) !important; }
+.markdown-preview-view h3,
+.markdown-source-view.mod-cm6 .HyperMD-header-3 { font-family: var(--h2-font-display); font-weight: var(--h3-weight) !important; line-height: var(--h3-line-height) !important; }
+.markdown-preview-view h4,
+.markdown-source-view.mod-cm6 .HyperMD-header-4 { font-family: var(--h2-font-display); font-weight: var(--h4-weight) !important; line-height: var(--h4-line-height) !important; }
+.markdown-preview-view h5,
+.markdown-source-view.mod-cm6 .HyperMD-header-5 { font-family: var(--h2-font-display); font-weight: var(--h5-weight) !important; line-height: var(--h5-line-height) !important; }
+.markdown-preview-view h6,
+.markdown-source-view.mod-cm6 .HyperMD-header-6 { font-family: var(--h2-font-display); font-weight: var(--h6-weight) !important; line-height: var(--h6-line-height) !important; }
+
+
+/* Small active labels use the accessible red text stop, with no fading tail. */
+body:is(.theme-light,.theme-dark) .tree-item-self.is-active .tree-item-inner,
+body:is(.theme-light,.theme-dark) .nav-file-title.is-active .nav-file-title-content,
+body:is(.theme-light,.theme-dark) .nav-folder-title.is-active .nav-folder-title-content,
+body:is(.theme-light,.theme-dark) .workspace .mod-root .workspace-tab-header.is-active .workspace-tab-header-inner-title,
+body:is(.theme-light,.theme-dark) .modal.mod-settings .vertical-tab-nav-item.is-active .vertical-tab-nav-item-title {
+  background: none;
+  color: var(--h2-accent-hover);
+  -webkit-text-fill-color: var(--h2-accent-hover);
+}
+
+body.theme-light {
+  --h2-desk: #EAE7E1;
+}
+body.theme-dark {
+  --h2-desk: #171614;
+}
+.workspace-leaf-content[data-type="markdown"] .markdown-source-view.mod-cm6 .cm-scroller,
+.workspace-leaf-content[data-type="markdown"] .markdown-preview-view {
+  background-color: var(--h2-desk);
+  padding: 32px;
+}
+.workspace-leaf-content[data-type="markdown"] .cm-sizer,
+.workspace-leaf-content[data-type="markdown"] .markdown-preview-sizer {
+  background-color: var(--h2-paper);
+  border: 1px solid var(--h2-border);
+  border-radius: 0;
+  box-shadow: var(--h2-shadow-2);
+  padding: 40px 48px;
+  box-sizing: border-box;
+  min-height: calc(100vh - 176px);
+}
+.modal.mod-settings .vertical-tab-header {
+  background-color: var(--h2-desk);
+}
+.modal.mod-settings .vertical-tab-content {
+  background-color: var(--h2-desk);
+  padding: 24px 32px;
+}
+.modal.mod-settings .vertical-tab-content .setting-item {
+  background-color: var(--h2-paper) !important;
+  border-bottom: 1px solid var(--h2-border) !important;
+  border-radius: 0;
+  padding: 20px 24px !important;
+}
+.modal.mod-settings .vertical-tab-content .setting-item.setting-item-heading {
+  background: transparent !important;
+  border: 0 !important;
+  padding: 24px 0 12px !important;
+}
+
+
+/* CDP: live title/metadata/content are siblings; preview title/metadata live in mod-header.
+   A property must exist before reserving a page margin; Other.md has none. */
+body { --h2-margin-ratio: 35%; --h2-margin-half-gap: 24px; }
+@supports (container-type: inline-size) {
+& .workspace-leaf-content[data-type="markdown"] > .view-content {
+  container-type: inline-size;
+  container-name: h2-document;
+}
+& .modal.mod-settings .vertical-tab-header { flex: 0 0 clamp(208px, 24%, 256px); max-width: none; }
+@container h2-document (min-width: 1040px) {
+  & .markdown-source-view.mod-cm6.is-live-preview .cm-sizer:has(> .metadata-container .metadata-property),
+  & .markdown-preview-view .markdown-preview-sizer:has(> .mod-header .metadata-property) { --file-line-width: 1160px; }
+  & .markdown-source-view.mod-cm6.is-live-preview .cm-sizer:has(> .metadata-container .metadata-property),
+  & .markdown-preview-view .markdown-preview-sizer:has(> .mod-header .metadata-property) { display: flow-root; }
+  & .markdown-source-view.mod-cm6.is-live-preview .cm-sizer > .metadata-container:has(.metadata-property),
+  & .markdown-preview-view .mod-header > .metadata-container:has(.metadata-property) {
+    --metadata-input-font-size: 16px;
+    float: left;
+    width: calc(var(--h2-margin-ratio) - var(--h2-margin-half-gap));
+    padding: 16px 28px 28px 0;
+    margin: 0;
+    border: 0;
+    border-right: 1px solid var(--h2-border);
+    border-radius: 0;
+  }
+  & .markdown-source-view.mod-cm6.is-live-preview .cm-sizer:has(> .metadata-container .metadata-property) > :is(.cm-contentContainer, .embedded-backlinks),
+  & .markdown-preview-view .markdown-preview-sizer:has(> .mod-header .metadata-property) > :not(.mod-header):not(.markdown-preview-pusher) {
+    margin-inline-start: calc(var(--h2-margin-ratio) + var(--h2-margin-half-gap));
+    min-width: 0;
+  }
+  & .markdown-source-view.mod-cm6.is-live-preview .cm-content { width: 100%; }
+  & .metadata-container .metadata-properties { display: flex; flex-direction: column; gap: 0; }
+  & .metadata-container .metadata-property { flex-direction: column; align-items: stretch; gap: 4px; padding: 12px 0; border-bottom: 1px solid var(--h2-border); }
+  & .metadata-container .metadata-property-key,
+  & .metadata-container .metadata-property-value { width: 100%; flex-basis: auto; }
+  & .metadata-container .metadata-property-key { font-size: 12px; line-height: 20px; }
+  & .metadata-container .metadata-property-value { font-size: 16px; line-height: 28px; }
+}
+@container h2-document (max-width: 1039px) {
+  & .inline-title { --inline-title-size: 64px; --inline-title-line-height: 1.3125; font-size: 64px; line-height: 84px; margin-bottom: 36px; }
+  & .metadata-container { margin-bottom: 32px; }
+}
+/* 双列属性在 ~800px 以下值列会窄到换行（值与标签错位），提前回单列 */
+@container h2-document (max-width: 800px) {
+  & .metadata-properties { grid-template-columns: minmax(0, 1fr); }
+}
+@container h2-document (max-width: 600px) {
+  & .inline-title { --inline-title-size: 48px; --inline-title-line-height: 1.333333; font-size: 48px; line-height: 64px; }
+  & .metadata-properties { grid-template-columns: minmax(0, 1fr); }
+  & .cm-sizer,
+  & .markdown-preview-sizer { padding: 24px !important; }
+}
+}
+@media (max-width: 800px) {
+  & .modal.mod-settings .vertical-tab-header { flex-basis: 25%; min-width: 160px; }
+}
+@media print {
+  & .workspace-leaf-content[data-type="markdown"] .markdown-preview-view,
+  & .workspace-leaf-content[data-type="markdown"] .markdown-preview-sizer { background: transparent; border: 0; box-shadow: none; padding: 0; }
+}
+
+/* Insert after existing W4 + Delight and DARK MODE rules. Real 1.14.4 DOM probed.
+   Defaults work without linear(); enhancements only alter transform/opacity.
+   Geometry, final checked colors and existing accessibility states stay native. */
+body {
+  --h2-duration-touch: 80ms;
+  --h2-duration-release: 320ms;
+  --h2-ease-press: cubic-bezier(.2, 0, .2, 1);
+  --h2-ease-settle: cubic-bezier(.2, .8, .2, 1);
+  --h2-ease-spring: var(--h2-ease-settle);
+}
+@supports (animation-timing-function: linear(0, 1)) {
+  & body {
+    --h2-ease-spring: linear(0, .057 4%, .192 8%, .359 12%, .528 16%, .678 20%, .8 24%, .891 28%, .954 32%, .994 36%, 1.016 40%, 1.026 44%, 1.028 48%, 1.026 52%, 1.021 56%, 1.016 60%, 1.012 64%, 1.008 68%, 1.005 72%, 1.003 76%, 1.001 80%, 1 88%, 1);
+  }
+}
+@keyframes h2-check-spring {
+  from { transform: scale(.64); }
+  to { transform: scale(1); }
+}
+.markdown-preview-view input.task-list-item-checkbox:checked,
+.markdown-source-view.mod-cm6 input.task-list-item-checkbox:checked {
+  background-image: none;
+  background-color: var(--checkbox-color);
+  animation: h2-check-spring var(--h2-duration-release) var(--h2-ease-spring);
+}
+.markdown-preview-view input.task-list-item-checkbox,
+.markdown-source-view.mod-cm6 input.task-list-item-checkbox {
+  transform-origin: center;
+}
+@media (prefers-reduced-motion: reduce) {
+  & body { --h2-duration-touch: 0ms; --h2-duration-release: 0ms; }
+  & .markdown-preview-view input.task-list-item-checkbox:checked,
+  & .markdown-source-view.mod-cm6 input.task-list-item-checkbox:checked {
+    animation: none !important;
+  }
+  & .checkbox-container::after { transition: none !important; }
+}
+
+/* Append after existing chrome + DARK MODE. Header and view-content are siblings.
+   Only the active mode publishes a timeline; hidden preview/live must not compete.
+   Source: https://developer.chrome.com/docs/css-ui/scroll-driven-animations */
+@supports (animation-timeline: scroll()) and (timeline-scope: --h2-note-scroll) {
+  & body.show-inline-title .workspace-leaf-content[data-type="markdown"] {
+    timeline-scope: --h2-note-scroll;
+  }
+  & body.show-inline-title .workspace-leaf-content[data-type="markdown"][data-mode="source"] .cm-scroller,
+  & body.show-inline-title .workspace-leaf-content[data-type="markdown"][data-mode="preview"] .markdown-preview-view {
+    scroll-timeline: --h2-note-scroll block;
+  }
+  & body.show-inline-title .workspace-leaf-content[data-type="markdown"] > .view-header {
+    position: relative;
+  }
+  & body.show-inline-title .workspace-leaf-content[data-type="markdown"] > .view-header .view-header-title {
+    animation: h2-header-arrive auto linear both;
+    animation-timeline: --h2-note-scroll;
+    animation-range: 128px 224px;
+  }
+  & body.show-inline-title .workspace-leaf-content[data-type="markdown"] > .view-header::after {
+    content: "";
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: 0;
+    height: 1px;
+    background: var(--h2-border);
+    pointer-events: none;
+    animation: h2-header-hairline auto linear both;
+    animation-timeline: --h2-note-scroll;
+    animation-range: 128px 224px;
+  }
+}
+@keyframes h2-header-arrive {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes h2-header-hairline {
+  from { opacity: 0; transform: scaleX(.96); }
+  to { opacity: 1; transform: scaleX(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  & body.show-inline-title .workspace-leaf-content[data-type="markdown"] > .view-header .view-header-title,
+  & body.show-inline-title .workspace-leaf-content[data-type="markdown"] > .view-header::after {
+    animation: none !important;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Renaming remains visible when the editable header title receives focus. */
+body.show-inline-title .workspace-leaf-content[data-type="markdown"] > .view-header .view-header-title:focus {
+  animation: none;
+  opacity: 1;
+  transform: none;
+}
+
+/* Append after W4 + DARK MODE. Verified .prompt children in Obsidian 1.14.4.
+   Replacement for note arrival: CSS has no durable "visited leaf" state.
+   Animate stable section containers so filtering does not replay every result. */
+body {
+  --h2-duration-arrival-shell: 240ms;
+  --h2-duration-arrival-content: 320ms;
+}
+@keyframes h2-prompt-shell {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes h2-prompt-layer {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.prompt {
+  animation: h2-prompt-shell var(--h2-duration-arrival-shell) var(--h2-ease-settle) both;
+}
+.prompt > .prompt-input-container {
+  animation: h2-prompt-layer var(--h2-duration-arrival-content) var(--h2-ease-settle) 0ms both;
+}
+.prompt > .prompt-results {
+  animation: h2-prompt-layer var(--h2-duration-arrival-content) var(--h2-ease-settle) 48ms both;
+}
+.prompt > .prompt-instructions {
+  animation: h2-prompt-layer var(--h2-duration-arrival-content) var(--h2-ease-settle) 96ms both;
+}
+@media (prefers-reduced-motion: reduce) {
+  & body .prompt,
+  & body .prompt > .prompt-input-container,
+  & body .prompt > .prompt-results,
+  & body .prompt > .prompt-instructions {
+    animation: none !important;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Append after W4 / DARK MODE. Verified actual buttons, tree, tab, menu,
+   prompt-input-container in 1.14.4. Uses prototype-1 motion tokens. */
+body :is(button, .clickable-icon, .workspace-tab-header, .tree-item-self, .menu-item, .suggestion-item):not(:disabled):not([aria-disabled="true"]) {
+  transition: transform var(--h2-duration-release) var(--h2-ease-spring),
+              opacity var(--h2-duration-fast) var(--h2-ease-settle);
+  transform-origin: center;
+}
+
+body :is(button, .clickable-icon, .workspace-tab-header, .tree-item-self, .menu-item, .suggestion-item):not(:disabled):not([aria-disabled="true"]):active {
+  transform: translateY(2px) scale(.98);
+  opacity: .96;
+  transition-duration: var(--h2-duration-touch);
+  transition-timing-function: var(--h2-ease-press);
+}
+.prompt-input-container {
+  position: relative;
+}
+.prompt-input-container::after {
+  content: "";
+  position: absolute;
+  inset: 4px 8px 12px;
+  border: 1px solid var(--h2-gray-400);
+  border-radius: var(--input-radius);
+  pointer-events: none;
+  opacity: 0;
+  transform: scaleX(.96);
+  transition: opacity var(--h2-duration-base) var(--h2-ease-settle),
+              transform var(--h2-duration-release) var(--h2-ease-spring);
+}
+.prompt-input-container:focus-within::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+@media (prefers-reduced-motion: reduce) {
+  & body :is(button, .clickable-icon, .workspace-tab-header, .tree-item-self, .menu-item, .suggestion-item) {
+    transition: none !important;
+    transform: none !important;
+  }
+  & .prompt-input-container::after {
+    transition: none !important;
+    transform: none !important;
+  }
+}

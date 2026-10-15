@@ -16,7 +16,8 @@ Obsidian theme. Single-file CSS, no build step. Aesthetic: **H2OS 现代化几�
 这几条是主题的灵魂，写代码时每次都要回看。任一失守，整个体系就退化成普通极简主题。
 
 1. **几何语法不可妥协。**
-   - 圆 = 默认 / 中性 / 可交互（checkbox、toggle、tag、状态点、active rail）
+   - 圆 = 默认 / 中性 / 可交互（checkbox、tag、状态点、active rail）
+   - 开关（toggle）是例外：v2.0 起由作者原创为「折三角」——平行四边形轨道（两个等边三角拼成）+ 一个三角，关 = 左边正立灰三角，开 = 沿斜边折成右边倒立红三角
    - 方 = 结构性内容（code block、table、inline code、callout 主体）
    - 三角 = 签名（只在氢视窗 + 折叠标记两处出现，不滥用）
    - 砍范围时优先级：**几何语法 > 红色 > 氢视窗**。红色可降级、氢视窗可延期，几何归属不能乱给。
@@ -47,7 +48,7 @@ Obsidian theme. Single-file CSS, no build step. Aesthetic: **H2OS 现代化几�
 2. **改前先读。** 定位区段（见下"theme.css 区段地图"）再动手。
 3. **最小改动。** 不重构、不加装饰注释、不"顺手优化"未要求的部分。
 4. **改完即验**（见下"可视化验证回路"）。纯 CSS 必须肉眼确认。
-5. **仅亮色模式**：`theme.css` 只写 `body.theme-light`，**不写** `body.theme-dark`。用户强行切暗色看 Obsidian 原生兜底，主题不干预。
+5. **亮色 + 暗色双模式**（v1.4 起，作者拍板）：亮色 token 在 `body.theme-light`，暗色整段镜像在 `theme.css` 末尾的 DARK MODE 段（`body.theme-dark`）。组件规则优先走 token，token 自动跟模式；**写死的颜色字面量**（rgba/hex/data-URI 内的色值）必须在 DARK MODE 段补暗色覆盖。新增任何视觉规则，亮暗两个模式都要渲染确认。
 6. Obsidian 约定：**优先用官方变量**（`--toggle-*`、`--checkbox-*`、`--tab-*`、`--radius-*`）；自造变量统一 `--h2-*` 前缀，分 primitive / semantic / component 三层。
 7. **阴影统一走 token 出口**：组件只 `box-shadow: var(--h2-shadow-2)`，不内联散值。显脏可清空 token 全局退回。
 8. **过渡动画限定具体属性**（`color` / `background-color` / `border-color` / `opacity` / `transform`），不用 `transition: all`，不动 layout 属性。用 `--h2-duration-*` token，不用魔法时长。
@@ -73,7 +74,11 @@ Obsidian theme. Single-file CSS, no build step. Aesthetic: **H2OS 现代化几�
 
 ## 可视化验证回路
 
-DEV_VAULT 通过 symlink 把本主题挂进 `../../../DEV_VAULT/.obsidian/themes/H2 OS`。
+**首选：渲染 harness**（`dev/render-harness/`，见其中 README）。独立的真实 Obsidian 实例 + CDP，可程序化切亮/暗、切实时预览/阅读模式、截图、量 computed style / getBoundingClientRect。实时预览与阅读模式是两套 DOM，只看代码看不出差异，必须两模式都渲染对照；改动尽量用 `style` 量数值，不只看截图。
+
+**交付前必跑细节回归**：`node dev/render-harness/regress.mjs <port>`（先用 `launch.sh` 起一个主题目录指向本仓库的实例），全部检查 PASS 才算完成。它检查的都是"修过又被别的改动弄坏"的细节：折叠竖线对齐箭头、属性区左缘对齐标题、实时预览与阅读模式标题同色、限制行宽有效、右栏收起后视图切换钮仍在、徽记在、设置页左栏宽度、开关几何与折叠态。**踩到新的细节坑，先在 regress.mjs 补一条检查，再去修。**改 token（尤其 `--nav-*`、`--file-line-width`、`--toggle-*`）时必须想一想它被哪些几何依赖。
+
+备选：DEV_VAULT 通过 symlink 把本主题挂进 `../../../DEV_VAULT/.obsidian/themes/H2 OS`。
 改完 `theme.css` 后：
 
 1. 在 `../../../DEV_VAULT/.obsidian/appearance.json` 把 `cssTheme` 切到 `H2 OS`，然后 reload（`Cmd+R`）或外观设置切换主题。
