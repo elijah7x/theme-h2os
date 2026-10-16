@@ -1,5 +1,5 @@
 /* ============================================================
-   H2 OS — Obsidian Theme  v2.0.1（纸面桌台 · 页边图谱 · 暗色 · 折三角开关）
+   H2 OS — Obsidian Theme  v2.0.2（纸面桌台 · 页边图谱 · 暗色 · 折三角开关）
    字体: Poppins · Montserrat · Source Han Sans · JetBrains Mono
    色彩: White #FFFFFF · Warm Gray #1C1917 / #57534E · Red #D14A4A（v1.3 暖灰纸感）
    几何: 圆(交互) · 方(内容) · 三角(签名)
@@ -225,6 +225,11 @@ body.theme-light {
   --background-modifier-success:    rgba(107, 155, 107, 0.12);   /* sage tint */
   --background-modifier-error:      rgba(184, 85, 85, 0.12);     /* crimson tint */
   --background-modifier-cover:      rgba(255, 255, 255, 0.92);
+
+  /* 浮出物：官方 --menu-background 默认取 --background-secondary，半透明模式下
+     bench 让位成玻璃（transparent），非原生菜单随之整块透底。浮层必须不透明，
+     与暗色段同口径取 elevated。 */
+  --menu-background:                var(--h2-bg-elevated);
 
   /* 文字层级 */
   --text-normal:        var(--h2-text-body);
