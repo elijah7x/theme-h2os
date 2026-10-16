@@ -50,7 +50,7 @@ Discipline governs the constant; delight lives in events. The interface holds st
 
 ## Recommended setup
 
-- **Turn on inline titles** (Settings → Appearance → Show inline title): the display-scale opening of every note, and its unfolding three-segment line, live there.
+- **Turn off inline titles** (Settings → Appearance → Show inline title) and let each note open with its own `# Heading`: it carries the display-scale type and the three-segment line, and nothing is shown twice. If you keep inline titles on, the theme draws the line under the inline title only and drops the one under `# Heading`.
 - **Collapse the left ribbon**: the theme is built for minimalism, and the canvas is most complete without it — the frequent entry points all have hotkeys.
 - Stay in light mode. The white canvas and gray-red depth system were tuned as one composition; switching to dark falls back to Obsidian's native appearance rather than a hasty inversion.
 

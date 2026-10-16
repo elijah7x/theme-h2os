@@ -88,6 +88,20 @@ for (const mode of ['live', 'preview']) {
   check('H1 颜色：实时预览 = 阅读模式', lp === pv, `${lp} / ${pv}`);
 }
 
+// ── 3b. 标题三段线一页一条：开内嵌标题 → H1 不画线；关 → H1 画线 ────────────
+{
+  const h1Line = async (mode, inline) => {
+    await main.ev(`app.vault.setConfig('showInlineTitle', ${inline}); app.updateInlineTitleDisplay(); 1`);
+    await open('Everything.md', mode);
+    return main.ev(`getComputedStyle(document.querySelector('.workspace-leaf.mod-active ${mode === 'live' ? '.markdown-source-view .cm-line.HyperMD-header-1' : '.markdown-preview-view h1'}'), '::after').content`);
+  };
+  const got = {};
+  for (const mode of ['live', 'preview']) for (const inline of [true, false]) got[`${mode}/${inline ? 'on' : 'off'}`] = await h1Line(mode, inline);
+  await main.ev(`app.vault.setConfig('showInlineTitle', true); app.updateInlineTitleDisplay(); 1`);
+  check('H1 三段线：开内嵌标题时不画、关闭时画（两种模式）',
+    got['live/on'] === 'none' && got['preview/on'] === 'none' && got['live/off'] === '""' && got['preview/off'] === '""', JSON.stringify(got));
+}
+
 // ── 4. 限制行宽开关真的有效（无属性的笔记：开 ≤800，关 ≥1200，窗口 1600）─────
 {
   await main.send('Emulation.setDeviceMetricsOverride', { width: 1600, height: 900, deviceScaleFactor: 1, mobile: false });

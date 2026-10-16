@@ -1,5 +1,5 @@
 /* ============================================================
-   H2 OS — Obsidian Theme  v2.0.2（纸面桌台 · 页边图谱 · 暗色 · 折三角开关）
+   H2 OS — Obsidian Theme  v2.0.3（纸面桌台 · 页边图谱 · 暗色 · 折三角开关）
    字体: Poppins · Montserrat · Source Han Sans · JetBrains Mono
    色彩: White #FFFFFF · Warm Gray #1C1917 / #57534E · Red #D14A4A（v1.3 暖灰纸感）
    几何: 圆(交互) · 方(内容) · 三角(签名)
@@ -773,6 +773,15 @@ h5, h6 {
     var(--h2-border) 34.5% 65.5%, transparent 65.5% 69%,
     var(--h2-border) 69% 100%
   );
+}
+
+/* 防呆：一页只有一条标题三段线。开启"显示内嵌标题"（asar 实锤：app.js
+   updateInlineTitleDisplay 切 body.show-inline-title）时，内嵌标题就是
+   文档标题，已自带三段线；正文 H1 再画一条会在首屏叠成两条（文档首行常是
+   与文件名重复的 # 标题）。关闭内嵌标题时 H1 沿用上面的三段线，规则不变。 */
+body.show-inline-title .markdown-preview-view h1::after,
+body.show-inline-title .markdown-source-view.mod-cm6 .cm-line.HyperMD-header-1::after {
+  content: none;
 }
 
 /* ── 列表 ────────────────────────────────────────────────────
