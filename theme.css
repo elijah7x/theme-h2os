@@ -1,5 +1,5 @@
 /* ============================================================
-   H2 OS — Obsidian Theme  v2.0.3（纸面桌台 · 页边图谱 · 暗色 · 折三角开关）
+   H2 OS — Obsidian Theme  v2.1.0（纸面桌台 · 页边图谱 · 暗色 · 折三角开关）
    字体: Poppins · Montserrat · Source Han Sans · JetBrains Mono
    色彩: White #FFFFFF · Warm Gray #1C1917 / #57534E · Red #D14A4A（v1.3 暖灰纸感）
    几何: 圆(交互) · 方(内容) · 三角(签名)
@@ -8,6 +8,305 @@
    设计文档: 见作者本地知识库（不随仓库发布）
    ============================================================*/
 
+
+/* @settings
+
+name: H2 OS
+id: h2os
+settings:
+  -
+    id: h2os-heading-layout
+    title: Layout
+    title.zh: 版面
+    type: heading
+    level: 1
+    collapsed: true
+  -
+    id: h2-no-margin-atlas
+    title: Keep properties on top
+    title.zh: 属性固定在顶部
+    description: Turns off Margin Atlas, the two-column layout that moves properties to the left on wide panes.
+    description.zh: 关闭页边图谱：宽屏下不再把笔记属性移到左侧。
+    type: class-toggle
+  -
+    id: h2-margin-ratio
+    title: Margin Atlas · left column width (%)
+    title.zh: 页边图谱 · 左列宽度（%）
+    description: Share of the page width given to properties. Only applies to the two-column layout.
+    description.zh: 属性列占页面宽度的比例，只在双列布局下生效。
+    type: variable-number-slider
+    default: 35
+    min: 25
+    max: 45
+    step: 1
+    format: '%'
+  -
+    id: h2-no-noise
+    title: Turn off paper grain
+    title.zh: 关闭纸感噪点
+    description: Removes the faint grain laid over the whole window.
+    description.zh: 去掉铺在整个窗口上的细微噪点。
+    type: class-toggle
+  -
+    id: h2os-heading-rules
+    title: Title line and dividers
+    title.zh: 标题线与分隔线
+    type: heading
+    level: 1
+    collapsed: true
+  -
+    id: h2-title-rule-off
+    title: Hide the line under titles
+    title.zh: 隐藏标题下的线
+    description: Removes the three-segment line under the inline title and under # headings.
+    description.zh: 去掉内嵌标题和一级标题下方的三段线。
+    type: class-toggle
+  -
+    id: h2-rule-solid
+    title: Solid lines instead of three segments
+    title.zh: 三段线改为实线
+    description: Dividers (---), title lines and the footnote rule become plain hairlines.
+    description.zh: 分隔线（---）、标题线和脚注区分隔线改为一条完整的细实线。
+    type: class-toggle
+  -
+    id: h2-rule-head-off
+    title: Hide the red lead-in
+    title.zh: 隐藏红色起笔
+    description: Removes the short red stroke at the start of the line under the inline title.
+    description.zh: 去掉内嵌标题下方那条线起笔处的一小段红色。
+    type: class-toggle
+  -
+    id: h2os-heading-type
+    title: Typography
+    title.zh: 排版
+    type: heading
+    level: 1
+    collapsed: true
+  -
+    id: h2-set-title-size
+    title: Title size (px)
+    title.zh: 标题字号（px）
+    description: One size for the inline title and # headings. Line height follows. Default 48px.
+    description.zh: 内嵌标题与一级标题共用一个字号，行高随之变化。默认 48px。
+    type: variable-number-slider
+    default: 48
+    min: 36
+    max: 72
+    step: 6
+    format: px
+  -
+    id: h2-set-inline-title-weight
+    title: Inline title weight
+    title.zh: 内嵌标题字重
+    type: variable-select
+    default: '400'
+    options:
+      -
+        label: Regular 400
+        value: '400'
+      -
+        label: Medium 500
+        value: '500'
+      -
+        label: SemiBold 600
+        value: '600'
+      -
+        label: Bold 700
+        value: '700'
+  -
+    id: h2-set-h1-weight
+    title: Heading 1 weight
+    title.zh: 一级标题字重
+    type: variable-select
+    default: '500'
+    options:
+      -
+        label: Regular 400
+        value: '400'
+      -
+        label: Medium 500
+        value: '500'
+      -
+        label: SemiBold 600
+        value: '600'
+      -
+        label: Bold 700
+        value: '700'
+  -
+    id: h2-set-heading-font
+    title: Heading font
+    title.zh: 标题字体
+    description: A font-family list for titles and headings, for example Georgia, 'Songti SC', serif. Body text keeps following Settings → Appearance.
+    description.zh: 标题和各级标题的字体列表，例如 Georgia, 'Songti SC', serif。正文字体仍由 设置 → 外观 决定。
+    type: variable-text
+    default: ''
+  -
+    id: h2-line-height-body
+    title: Body line height
+    title.zh: 正文行高
+    description: Default 1.75.
+    description.zh: 默认 1.75。
+    type: variable-number-slider
+    default: 1.75
+    min: 1.4
+    max: 2.2
+    step: 0.05
+  -
+    id: h2os-heading-levels
+    title: Headings 2–6
+    title.zh: 二至六级标题
+    description: Size and weight for each heading level. Defaults follow the theme's scale.
+    description.zh: 各级标题的字号和字重，默认值就是主题自带的层级。
+    type: heading
+    level: 2
+    collapsed: true
+  -
+    id: h2-set-h2-size
+    title: Heading 2 size (px)
+    title.zh: 二级标题字号（px）
+    type: variable-number-slider
+    default: 36
+    min: 24
+    max: 48
+    step: 2
+    format: px
+  -
+    id: h2-set-h2-weight
+    title: Heading 2 weight
+    title.zh: 二级标题字重
+    type: variable-select
+    default: '500'
+    options:
+      -
+        label: Regular 400
+        value: '400'
+      -
+        label: Medium 500
+        value: '500'
+      -
+        label: SemiBold 600
+        value: '600'
+      -
+        label: Bold 700
+        value: '700'
+  -
+    id: h2-set-h3-size
+    title: Heading 3 size (px)
+    title.zh: 三级标题字号（px）
+    type: variable-number-slider
+    default: 28
+    min: 20
+    max: 40
+    step: 2
+    format: px
+  -
+    id: h2-set-h3-weight
+    title: Heading 3 weight
+    title.zh: 三级标题字重
+    type: variable-select
+    default: '600'
+    options:
+      -
+        label: Regular 400
+        value: '400'
+      -
+        label: Medium 500
+        value: '500'
+      -
+        label: SemiBold 600
+        value: '600'
+      -
+        label: Bold 700
+        value: '700'
+  -
+    id: h2-set-h4-size
+    title: Heading 4 size (px)
+    title.zh: 四级标题字号（px）
+    type: variable-number-slider
+    default: 20
+    min: 16
+    max: 32
+    step: 2
+    format: px
+  -
+    id: h2-set-h4-weight
+    title: Heading 4 weight
+    title.zh: 四级标题字重
+    type: variable-select
+    default: '600'
+    options:
+      -
+        label: Regular 400
+        value: '400'
+      -
+        label: Medium 500
+        value: '500'
+      -
+        label: SemiBold 600
+        value: '600'
+      -
+        label: Bold 700
+        value: '700'
+  -
+    id: h2-set-h5-size
+    title: Heading 5 size (px)
+    title.zh: 五级标题字号（px）
+    type: variable-number-slider
+    default: 16
+    min: 12
+    max: 24
+    step: 2
+    format: px
+  -
+    id: h2-set-h5-weight
+    title: Heading 5 weight
+    title.zh: 五级标题字重
+    type: variable-select
+    default: '600'
+    options:
+      -
+        label: Regular 400
+        value: '400'
+      -
+        label: Medium 500
+        value: '500'
+      -
+        label: SemiBold 600
+        value: '600'
+      -
+        label: Bold 700
+        value: '700'
+  -
+    id: h2-set-h6-size
+    title: Heading 6 size (px)
+    title.zh: 六级标题字号（px）
+    type: variable-number-slider
+    default: 12
+    min: 10
+    max: 20
+    step: 2
+    format: px
+  -
+    id: h2-set-h6-weight
+    title: Heading 6 weight
+    title.zh: 六级标题字重
+    type: variable-select
+    default: '600'
+    options:
+      -
+        label: Regular 400
+        value: '400'
+      -
+        label: Medium 500
+        value: '500'
+      -
+        label: SemiBold 600
+        value: '600'
+      -
+        label: Bold 700
+        value: '700'
+
+*/
 
 /* ════════════════════════════════════════════════════════════
    TOKENS · 模式无关（字体 / 圆角 / 排版 / 阴影 / 动效）
@@ -734,7 +1033,7 @@ h5, h6 {
   margin-top: 1rem;
   /* v1.4：起笔 28px 一点红（第一段线的头），"句读级红"，三段结构不变 */
   background:
-    linear-gradient(var(--h2-accent), var(--h2-accent)) left / 28px 100% no-repeat,
+    linear-gradient(var(--h2-accent), var(--h2-accent)) left / var(--h2-rule-head, 28px) 100% no-repeat,
     linear-gradient(
     to right,
     var(--h2-border) 0 31%, transparent 31% 34.5%,
@@ -1949,7 +2248,7 @@ body.theme-dark .workspace-leaf-content[data-type="empty"] .empty-state-containe
 }
 .workspace-leaf-content[data-type="empty"] .empty-state-title::before,
 .workspace-leaf-content[data-type="empty"] .empty-state-title::after {
-  font-family: var(--h2-font-display);
+  font-family: var(--h2-font-stack);   /* 字标属签名，不随用户的标题字体设置变 */
   font-size: 40px;
   line-height: 1.2;
   letter-spacing: -0.03em;
@@ -4115,8 +4414,8 @@ body {
    甚至压迫感过重。H2-H6 保持现有值（它们本来就小，窄屏无压力）。
    桌面 40px 排面标题不动（本规则只在 body.is-mobile 下生效）。 */
 body.is-mobile {
-  --inline-title-size: 2rem;   /* 32px，移动端排面降档 */
-  --h1-size: 2rem;             /* 与 inline-title 对齐 */
+  --inline-title-size: var(--h2-set-title-size, 2rem);   /* 32px，移动端排面降档；用户在 Style Settings 里设了字号则以用户为准 */
+  --h1-size: var(--h2-set-title-size, 2rem);             /* 与 inline-title 对齐 */
 }
 
 /* inline-title 上下留白同步收紧（桌面 24px/32px 在窄屏省空间）。
@@ -4958,8 +5257,11 @@ body {
   --h2-scale-5: 48px;
   --h2-scale-6: 64px;
   --h2-scale-7: 84px;
-  --h2-font-display: 'Avenir Next', 'Poppins', 'Montserrat', 'Jost', 'Segoe UI Variable', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, 'Source Han Sans SC', 'Noto Sans CJK SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-  --h2-font-reading: var(--h2-font-display);
+  --h2-font-stack: 'Avenir Next', 'Poppins', 'Montserrat', 'Jost', 'Segoe UI Variable', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, 'Source Han Sans SC', 'Noto Sans CJK SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  /* Style Settings：--h2-set-* 是留给用户的覆盖口，默认不定义，组件只读 var(--h2-set-x, 默认值)。
+     不直接让 Style Settings 写 token——body.is-mobile / body.theme-* 的同特异性块会让覆盖结果取决于 style 标签顺序。 */
+  --h2-font-display: var(--h2-set-heading-font, var(--h2-font-stack));
+  --h2-font-reading: var(--h2-font-stack);
   --h2-font-system: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', system-ui, sans-serif;
   --font-text-theme: var(--h2-font-reading);
   --font-heading-theme: var(--h2-font-display);
@@ -4968,27 +5270,28 @@ body {
   --h2-font-size-base: var(--h2-scale-1);
   --h2-line-height-body: 1.75;
   --h2-line-height-heading: 1.333333;
-  --inline-title-size: var(--h2-scale-7);
-  --inline-title-line-height: 1.333333;
-  --inline-title-weight: 400;
-  --h1-size: var(--h2-scale-5);
-  --h2-size: var(--h2-scale-4);
-  --h3-size: var(--h2-scale-3);
-  --h4-size: var(--h2-scale-2);
-  --h5-size: var(--h2-scale-1);
-  --h6-size: var(--h2-scale-0);
+  --inline-title-size: var(--h1-size);   /* 内嵌标题与 H1 同字号；字重仍走 --inline-title-weight(400) */
+  --inline-title-font: var(--h2-set-heading-font, var(--h1-font));   /* 默认等同官方（继承）；用户设了标题字体才换 */
+  --inline-title-line-height: var(--h1-line-height);
+  --inline-title-weight: var(--h2-set-inline-title-weight, 400);
+  --h1-size: var(--h2-set-title-size, var(--h2-scale-5));
+  --h2-size: var(--h2-set-h2-size, var(--h2-scale-4));
+  --h3-size: var(--h2-set-h3-size, var(--h2-scale-3));
+  --h4-size: var(--h2-set-h4-size, var(--h2-scale-2));
+  --h5-size: var(--h2-set-h5-size, var(--h2-scale-1));
+  --h6-size: var(--h2-set-h6-size, var(--h2-scale-0));
   --h1-line-height: 1.333333;
   --h2-line-height: 1.333333;
   --h3-line-height: 1.285714;
   --h4-line-height: 1.4;
   --h5-line-height: 1.5;
   --h6-line-height: 1.666667;
-  --h1-weight: 500;
-  --h2-weight: 500;
-  --h3-weight: 600;
-  --h4-weight: 600;
-  --h5-weight: 600;
-  --h6-weight: 600;
+  --h1-weight: var(--h2-set-h1-weight, 500);
+  --h2-weight: var(--h2-set-h2-weight, 500);
+  --h3-weight: var(--h2-set-h3-weight, 600);
+  --h4-weight: var(--h2-set-h4-weight, 600);
+  --h5-weight: var(--h2-set-h5-weight, 600);
+  --h6-weight: var(--h2-set-h6-weight, 600);
   --h1-letter-spacing: -0.035em;
   --h2-letter-spacing: -0.025em;
   --h3-letter-spacing: -0.02em;
@@ -5201,12 +5504,12 @@ body { --h2-margin-ratio: 35%; --h2-margin-half-gap: 24px; }
 }
 & .modal.mod-settings .vertical-tab-header { flex: 0 0 clamp(208px, 24%, 256px); max-width: none; }
 @container h2-document (min-width: 1040px) {
-  & .markdown-source-view.mod-cm6.is-live-preview .cm-sizer:has(> .metadata-container .metadata-property),
-  & .markdown-preview-view .markdown-preview-sizer:has(> .mod-header .metadata-property) { --file-line-width: 1160px; }
-  & .markdown-source-view.mod-cm6.is-live-preview .cm-sizer:has(> .metadata-container .metadata-property),
-  & .markdown-preview-view .markdown-preview-sizer:has(> .mod-header .metadata-property) { display: flow-root; }
-  & .markdown-source-view.mod-cm6.is-live-preview .cm-sizer > .metadata-container:has(.metadata-property),
-  & .markdown-preview-view .mod-header > .metadata-container:has(.metadata-property) {
+  & body:not(.h2-no-margin-atlas) .markdown-source-view.mod-cm6.is-live-preview .cm-sizer:has(> .metadata-container .metadata-property),
+  & body:not(.h2-no-margin-atlas) .markdown-preview-view .markdown-preview-sizer:has(> .mod-header .metadata-property) { --file-line-width: 1160px; }
+  & body:not(.h2-no-margin-atlas) .markdown-source-view.mod-cm6.is-live-preview .cm-sizer:has(> .metadata-container .metadata-property),
+  & body:not(.h2-no-margin-atlas) .markdown-preview-view .markdown-preview-sizer:has(> .mod-header .metadata-property) { display: flow-root; }
+  & body:not(.h2-no-margin-atlas) .markdown-source-view.mod-cm6.is-live-preview .cm-sizer > .metadata-container:has(.metadata-property),
+  & body:not(.h2-no-margin-atlas) .markdown-preview-view .mod-header > .metadata-container:has(.metadata-property) {
     --metadata-input-font-size: 16px;
     float: left;
     width: calc(var(--h2-margin-ratio) - var(--h2-margin-half-gap));
@@ -5216,21 +5519,21 @@ body { --h2-margin-ratio: 35%; --h2-margin-half-gap: 24px; }
     border-right: 1px solid var(--h2-border);
     border-radius: 0;
   }
-  & .markdown-source-view.mod-cm6.is-live-preview .cm-sizer:has(> .metadata-container .metadata-property) > :is(.cm-contentContainer, .embedded-backlinks),
-  & .markdown-preview-view .markdown-preview-sizer:has(> .mod-header .metadata-property) > :not(.mod-header):not(.markdown-preview-pusher) {
+  & body:not(.h2-no-margin-atlas) .markdown-source-view.mod-cm6.is-live-preview .cm-sizer:has(> .metadata-container .metadata-property) > :is(.cm-contentContainer, .embedded-backlinks),
+  & body:not(.h2-no-margin-atlas) .markdown-preview-view .markdown-preview-sizer:has(> .mod-header .metadata-property) > :not(.mod-header):not(.markdown-preview-pusher) {
     margin-inline-start: calc(var(--h2-margin-ratio) + var(--h2-margin-half-gap));
     min-width: 0;
   }
-  & .markdown-source-view.mod-cm6.is-live-preview .cm-content { width: 100%; }
-  & .metadata-container .metadata-properties { display: flex; flex-direction: column; gap: 0; }
-  & .metadata-container .metadata-property { flex-direction: column; align-items: stretch; gap: 4px; padding: 12px 0; border-bottom: 1px solid var(--h2-border); }
-  & .metadata-container .metadata-property-key,
-  & .metadata-container .metadata-property-value { width: 100%; flex-basis: auto; }
-  & .metadata-container .metadata-property-key { font-size: 12px; line-height: 20px; }
-  & .metadata-container .metadata-property-value { font-size: 16px; line-height: 28px; }
+  & body:not(.h2-no-margin-atlas) .markdown-source-view.mod-cm6.is-live-preview .cm-content { width: 100%; }
+  & body:not(.h2-no-margin-atlas) .metadata-container .metadata-properties { display: flex; flex-direction: column; gap: 0; }
+  & body:not(.h2-no-margin-atlas) .metadata-container .metadata-property { flex-direction: column; align-items: stretch; gap: 4px; padding: 12px 0; border-bottom: 1px solid var(--h2-border); }
+  & body:not(.h2-no-margin-atlas) .metadata-container .metadata-property-key,
+  & body:not(.h2-no-margin-atlas) .metadata-container .metadata-property-value { width: 100%; flex-basis: auto; }
+  & body:not(.h2-no-margin-atlas) .metadata-container .metadata-property-key { font-size: 12px; line-height: 20px; }
+  & body:not(.h2-no-margin-atlas) .metadata-container .metadata-property-value { font-size: 16px; line-height: 28px; }
 }
 @container h2-document (max-width: 1039px) {
-  & .inline-title { --inline-title-size: 64px; --inline-title-line-height: 1.3125; font-size: 64px; line-height: 84px; margin-bottom: 36px; }
+  & .inline-title { margin-bottom: 36px; }
   & .metadata-container { margin-bottom: 32px; }
 }
 /* 双列属性在 ~800px 以下值列会窄到换行（值与标签错位），提前回单列 */
@@ -5238,7 +5541,6 @@ body { --h2-margin-ratio: 35%; --h2-margin-half-gap: 24px; }
   & .metadata-properties { grid-template-columns: minmax(0, 1fr); }
 }
 @container h2-document (max-width: 600px) {
-  & .inline-title { --inline-title-size: 48px; --inline-title-line-height: 1.333333; font-size: 48px; line-height: 64px; }
   & .metadata-properties { grid-template-columns: minmax(0, 1fr); }
   & .cm-sizer,
   & .markdown-preview-sizer { padding: 24px !important; }
@@ -5427,4 +5729,53 @@ body :is(button, .clickable-icon, .workspace-tab-header, .tree-item-self, .menu-
     transition: none !important;
     transform: none !important;
   }
+}
+
+/* ════════════════════════════════════════════════════════════
+   Style Settings 适配（插件 Style Settings 读取文件头的 @settings 块）
+   · 类开关写在文件末尾、特异性都比被覆盖的默认规则高一级，顺序不再重要。
+   · 数值类设置走 --h2-set-* 变量（见 TOKENS 注释），默认不定义；
+     只有 --h2-margin-ratio / --h2-line-height-body 直接写 token——
+     它们只在 body 单一特异性层定义，Style Settings 的 body.css-settings-manager 必然压过。
+   · 页边图谱开关在 @container 1040px 块内（选择器带 body:not(.h2-no-margin-atlas)）。
+   ════════════════════════════════════════════════════════════ */
+
+/* 纸感噪点（亮/暗各一份，需同时压过 body.theme-light::after / body.theme-dark::after） */
+body.h2-no-noise.theme-light::after,
+body.h2-no-noise.theme-dark::after {
+  display: none;
+}
+
+/* 页边图谱关闭：宽屏也走单列的属性区间距，与 ≤1039px 容器下一致 */
+body.h2-no-margin-atlas .inline-title {
+  margin-bottom: 36px;
+}
+body.h2-no-margin-atlas .metadata-container {
+  margin-bottom: 32px;
+}
+
+/* 红色起笔 */
+body.h2-rule-head-off {
+  --h2-rule-head: 0px;
+}
+
+/* 三段线 → 实线（打印里同款做法；屏幕上内嵌标题的红色起笔保留，由上一条单独控制） */
+body.h2-rule-solid .markdown-preview-view hr,
+body.h2-rule-solid .markdown-source-view.mod-cm6 hr,
+body.h2-rule-solid .markdown-preview-view .footnotes::before,
+body.h2-rule-solid .markdown-preview-view h1::after,
+body.h2-rule-solid .markdown-source-view.mod-cm6 .cm-line.HyperMD-header-1::after {
+  background: var(--h2-border);
+}
+body.h2-rule-solid .inline-title::after {
+  background:
+    linear-gradient(var(--h2-accent), var(--h2-accent)) left / var(--h2-rule-head, 28px) 100% no-repeat,
+    linear-gradient(var(--h2-border), var(--h2-border));
+}
+
+/* 隐藏标题下的线（放在实线规则之后：content:none 比任何 background 都彻底） */
+body.h2-title-rule-off .inline-title::after,
+body.h2-title-rule-off .markdown-preview-view h1::after,
+body.h2-title-rule-off .markdown-source-view.mod-cm6 .cm-line.HyperMD-header-1::after {
+  content: none;
 }

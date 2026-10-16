@@ -54,6 +54,16 @@ Discipline governs the constant; delight lives in events. The interface holds st
 - **Collapse the left ribbon**: the theme is built for minimalism, and the canvas is most complete without it — the frequent entry points all have hotkeys.
 - Stay in light mode. The white canvas and gray-red depth system were tuned as one composition; switching to dark falls back to Obsidian's native appearance rather than a hasty inversion.
 
+## Style Settings
+
+H2 OS ships a configuration for the [Style Settings](https://github.com/mgmeyers/obsidian-style-settings) plugin. Install it if you want to adjust:
+
+- **Layout**: keep properties on top (turn off Margin Atlas), the width of the left column, the paper grain.
+- **Title line and dividers**: hide the line under titles, solid lines instead of three segments, hide the red lead-in.
+- **Typography**: title size, inline-title and heading 1 weight, size and weight of headings 2–6, heading font, body line height.
+
+Nothing changes until you touch a setting, and the theme looks the same without the plugin.
+
 ## Recommended fonts
 
 No font files are bundled. Poppins or Montserrat gives Latin text its intended geometric character; Chinese text prefers Source Han Sans. On macOS:

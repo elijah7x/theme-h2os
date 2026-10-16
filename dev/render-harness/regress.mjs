@@ -102,6 +102,49 @@ for (const mode of ['live', 'preview']) {
     got['live/on'] === 'none' && got['preview/on'] === 'none' && got['live/off'] === '""' && got['preview/off'] === '""', JSON.stringify(got));
 }
 
+// ── 3c. Style Settings 适配：类开关与 --h2-set-* 覆盖口生效，且默认值不变 ─────────
+// 不依赖插件：直接在 body 上加类 / 写内联变量，等价于 Style Settings 写入 body.css-settings-manager。
+{
+  await main.send('Emulation.setDeviceMetricsOverride', { width: 1700, height: 900, deviceScaleFactor: 1, mobile: false });
+  await main.ev(`app.workspace.leftSplit.collapse(); app.workspace.rightSplit.collapse(); app.vault.setConfig('showInlineTitle', true); app.updateInlineTitleDisplay(); 1`); await sleep(500);
+  await open('Everything.md', 'live');
+  const probe = () => main.ev(`(()=>{const L=document.querySelector('.workspace-leaf.mod-active');const t=L.querySelector('.inline-title'),h=L.querySelector('.markdown-source-view .cm-line.HyperMD-header-1'),m=L.querySelector('.metadata-container');
+    const g=(e,k,ps)=>getComputedStyle(e,ps)[k];
+    return {noise:g(document.body,'display','::after'),float:g(m,'float'),titleRule:g(t,'content','::after'),titleBg:g(t,'backgroundImage','::after'),
+      titleSize:g(t,'fontSize'),h1Size:g(h,'fontSize'),titleW:g(t,'fontWeight'),h1W:g(h,'fontWeight'),titleFont:g(t,'fontFamily'),h1Font:g(h,'fontFamily'),
+      bodyLH:g(L.querySelector('.cm-line:not(.HyperMD-header-1)'),'lineHeight'),
+      levels:[2,3,4,5,6].map(n=>{const e=L.querySelector('.markdown-source-view .cm-line.HyperMD-header-'+n);return e?g(e,'fontSize')+'/'+g(e,'fontWeight'):'-'}).join(' ')}})()`);
+  const withCls = async (cls, on) => { await main.ev(`document.body.classList.${on ? 'add' : 'remove'}(${JSON.stringify(cls)}); 1`); await sleep(250); return probe(); };
+  const withVar = async (k, v) => { await main.ev(`${v === null ? `document.body.style.removeProperty(${JSON.stringify(k)})` : `document.body.style.setProperty(${JSON.stringify(k)}, ${JSON.stringify(v)})`}; 1`); await sleep(250); return probe(); };
+  const d = await probe();
+  const noise = await withCls('h2-no-noise', true); await withCls('h2-no-noise', false);
+  const atlas = await withCls('h2-no-margin-atlas', true); await withCls('h2-no-margin-atlas', false);
+  const ruleOff = await withCls('h2-title-rule-off', true); await withCls('h2-title-rule-off', false);
+  const solid = await withCls('h2-rule-solid', true); await withCls('h2-rule-solid', false);
+  const size = await withVar('--h2-set-title-size', '60px'); await withVar('--h2-set-title-size', null);
+  const wt = await withVar('--h2-set-h1-weight', '700'); await withVar('--h2-set-h1-weight', null);
+  const iwt = await withVar('--h2-set-inline-title-weight', '600'); await withVar('--h2-set-inline-title-weight', null);
+  const font = await withVar('--h2-set-heading-font', 'Georgia, serif'); await withVar('--h2-set-heading-font', null);
+  const lh = await withVar('--h2-line-height-body', '2'); await withVar('--h2-line-height-body', null);
+  const lvSet = async (kind, vals) => { for (const [n, v] of vals) await withVar(`--h2-set-h${n}-${kind}`, v); const out = await probe(); for (const [n] of vals) await withVar(`--h2-set-h${n}-${kind}`, null); return out.levels; };
+  const lvSize = await lvSet('size', [[2, '44px'], [3, '32px'], [4, '24px'], [5, '18px'], [6, '14px']]);
+  const lvWeight = await lvSet('weight', [[2, '700'], [3, '500'], [4, '400'], [5, '700'], [6, '500']]);
+  const back = await probe();
+  check('Style Settings：默认值不变（标题 48px、H1 500、三段线在、页边图谱在、噪点在）',
+    d.titleSize === '48px' && d.h1Size === '48px' && d.h1W === '500' && d.titleW === '400' && d.titleRule === '""' && d.float === 'left' && d.noise === 'block', JSON.stringify({ size: [d.titleSize, d.h1Size], w: [d.titleW, d.h1W], rule: d.titleRule, float: d.float, noise: d.noise }));
+  check('Style Settings：噪点 / 页边图谱 / 标题线 / 实线 开关', noise.noise === 'none' && atlas.float === 'none' && ruleOff.titleRule === 'none' && !/31%/.test(solid.titleBg) && /31%/.test(d.titleBg),
+    JSON.stringify({ noise: noise.noise, float: atlas.float, rule: ruleOff.titleRule, solidBg: solid.titleBg.slice(0, 60) }));
+  check('Style Settings：标题字号 / 字重 / 字体 / 正文行高 覆盖口', size.titleSize === '60px' && size.h1Size === '60px' && wt.h1W === '700' && iwt.titleW === '600'
+    && font.titleFont.startsWith('Georgia') && font.h1Font.startsWith('Georgia') && lh.bodyLH === '32px',
+    JSON.stringify({ size: [size.titleSize, size.h1Size], wt: wt.h1W, iwt: iwt.titleW, font: [font.titleFont.slice(0, 12), font.h1Font.slice(0, 12)], lh: lh.bodyLH }));
+  check('Style Settings：H2–H6 字号 / 字重覆盖口，默认不变', d.levels === '36px/500 28px/600 20px/600 16px/600 12px/600'
+    && lvSize === '44px/500 32px/600 24px/600 18px/600 14px/600' && lvWeight === '36px/700 28px/500 20px/400 16px/700 12px/500',
+    JSON.stringify({ d: d.levels, size: lvSize, weight: lvWeight }));
+  check('Style Settings：撤销后回到默认', JSON.stringify(back) === JSON.stringify(d), JSON.stringify({ size: back.titleSize, float: back.float, noise: back.noise }));
+  await main.send('Emulation.setDeviceMetricsOverride', { width: 1440, height: 900, deviceScaleFactor: 1, mobile: false });
+  await main.ev(`app.workspace.leftSplit.expand(); app.workspace.rightSplit.expand(); 1`); await sleep(300);
+}
+
 // ── 4. 限制行宽开关真的有效（无属性的笔记：开 ≤800，关 ≥1200，窗口 1600）─────
 {
   await main.send('Emulation.setDeviceMetricsOverride', { width: 1600, height: 900, deviceScaleFactor: 1, mobile: false });

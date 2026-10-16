@@ -70,6 +70,12 @@ Obsidian theme. Single-file CSS, no build step. Aesthetic: **H2OS 现代化几�
 
     这条规矩是为杜绝"隔着截图猜 DOM"的撞墙循环。Phase 4 验 `data-type="empty"`、v0.4 设置页/控件选择器全部走路 A 验过。
 
+13. **Style Settings 适配**（v2.1 起）：配置块是 `theme.css` 文件头的 `/* @settings … */` 注释（YAML，中文走 `title.zh`/`description.zh`）。
+    - 类开关（`class-toggle`）：规则写在文件末尾「Style Settings 适配」段，选择器带 `body.h2-xxx`，特异性比被覆盖的默认规则高一级。
+    - 数值/字体/字重走 `--h2-set-*` 覆盖口：token 写成 `var(--h2-set-x, 默认值)`，**默认不定义该变量**。不要让 Style Settings 直接写 `body.is-mobile` / `body.theme-*` 里定义的 token——它写在 `body.css-settings-manager`（0,1,1），与这些块同特异性，胜负取决于 `<style>` 顺序。只有仅定义在 `body {}` 的 token（`--h2-margin-ratio`、`--h2-line-height-body`）可以直接开放。
+    - 新增/改动配置项后：用真实插件在 harness 里验一遍（装进 vault 的 `.obsidian/plugins/obsidian-style-settings`，`app.plugins.enablePlugin`，`settingsManager.setSetting('h2os', id, value)`），再跑 `regress.mjs`。
+    - 不开放：几何语法（圆角、折三角开关、checkbox 圆）、4px 网格、红色只做交互点缀。强调色暂未开放（红色硬编码约 50 处，含 data-URI SVG，需先改 mask-image）。
+
 ---
 
 ## 可视化验证回路
