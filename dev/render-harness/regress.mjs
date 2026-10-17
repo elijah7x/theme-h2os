@@ -158,6 +158,84 @@ for (const mode of ['live', 'preview']) {
   await main.ev(`app.workspace.leftSplit.expand(); app.workspace.rightSplit.expand(); 1`); await sleep(500);
 }
 
+// Bases 的横向滑块不能随正文纵向滚动条一起隐藏。
+{
+  try {
+    await main.ev(`(async()=>{
+      const leaf=app.workspace.getLeaf(false);
+      const ctx=window.__h2BasesRegression={leaf,state:leaf.getViewState(),theme:app.getTheme(),folder:'H2-Bases-Scrollbar-'+Date.now()};
+      const v=app.vault, columns=Array.from({length:12},(_,i)=>'column'+i);
+      await v.createFolder(ctx.folder);
+      for(let i=0;i<3;i++) await v.create(ctx.folder+'/sample'+i+'.md',
+        ['---',...columns.map(c=>c+': sample '+i+' '+c),'---','# Sample '+i].join('\\n'));
+      // Installed app.js: Bases YAML parser accepts views/order/columnSize and file.inFolder().
+      const order=['file.name',...columns.map(c=>'note.'+c)];
+      const yaml=['filters:', '  and:', '    - '+JSON.stringify('file.inFolder("'+ctx.folder+'")'),
+        '    - '+JSON.stringify('file.ext == "md"'), 'views:', '  - type: table', '    name: Scrollbar regression',
+        '    order:', ...order.map(c=>'      - '+c), '    columnSize:', ...order.map(c=>'      '+c+': 240')].join('\\n');
+      ctx.base=await v.create(ctx.folder+'/Wide.base',yaml);
+      ctx.embed=await v.create(ctx.folder+'/Embed.md','![[Wide.base]]');
+      return 1;
+    })()`);
+    for (const theme of ['moonstone', 'obsidian']) {
+      await main.ev(`app.changeTheme(${JSON.stringify(theme)}); 1`); await sleep(700);
+      for (const context of ['standalone', 'embed-preview', 'embed-live', 'sidebar']) {
+        const r = await main.ev(`(async()=>{
+          const ctx=window.__h2BasesRegression, context=${JSON.stringify(context)};
+          const leaf=context==='sidebar'?(ctx.side||(ctx.side=app.workspace.getRightLeaf(true))):ctx.leaf;
+          await leaf.openFile(context.startsWith('embed')?ctx.embed:ctx.base,
+            {state:{mode:context==='embed-preview'?'preview':'source',source:false}});
+          app.workspace.setActiveLeaf(leaf,{focus:true});
+          let el;
+          for(let i=0;i<50;i++){
+            el=[...leaf.view.containerEl.querySelectorAll('.bases-view[data-view-type="table"]')].find(e=>e.clientWidth>0);
+            if(el&&el.scrollWidth>el.clientWidth)break;
+            await new Promise(r=>setTimeout(r,100));
+          }
+          if(!el)return {error:'No rendered Bases table'};
+          const bar=getComputedStyle(el,'::-webkit-scrollbar'),thumb=getComputedStyle(el,'::-webkit-scrollbar-thumb');
+          const before=el.scrollLeft;el.scrollLeft=before===0?80:0;
+          const after=el.scrollLeft;el.scrollLeft=before;
+          return {width:el.clientWidth,scrollWidth:el.scrollWidth,scrollbarWidth:getComputedStyle(el).scrollbarWidth,
+            display:bar.display,height:bar.height,verticalWidth:bar.width,thumbDisplay:thumb.display,
+            scrollbarColor:getComputedStyle(el).scrollbarColor,thumbColor:thumb.backgroundColor,thumbRadius:thumb.borderRadius,moved:after!==before};
+        })()`);
+        const label = `Bases 横向滚动条（${theme}/${context}）`;
+        check(label, !!r && !r.error && r.width > 0 && r.scrollWidth > r.width && r.scrollbarWidth === 'auto'
+          && r.display !== 'none' && r.thumbDisplay !== 'none' && r.height === '8px' && r.verticalWidth === '0px'
+          && r.scrollbarColor === 'auto' && r.thumbColor !== 'rgba(0, 0, 0, 0)' && r.thumbRadius === '0px' && r.moved, JSON.stringify(r));
+      }
+      await main.ev(`app.workspace.setActiveLeaf(window.__h2BasesRegression.leaf,{focus:true}); 1`);
+      for (const mode of ['live', 'preview']) {
+        await open('Everything.md', mode);
+        const r = await main.ev(`(()=>{
+          const el=window.__h2BasesRegression.leaf.view.containerEl.querySelector(${JSON.stringify(mode === 'live' ? '.cm-scroller' : '.markdown-preview-view')});
+          if(!el)return null;
+          const bar=getComputedStyle(el,'::-webkit-scrollbar');
+          return {width:getComputedStyle(el).scrollbarWidth,display:bar.display,height:bar.height};
+        })()`);
+        check(`正文滚动条仍隐藏（${theme}/${mode}）`, !!r && r.width === 'none' && r.display === 'none' && r.height === '0px', JSON.stringify(r));
+      }
+    }
+  } catch (e) {
+    check('Bases 横向滚动条：用例执行', false, String(e));
+  } finally {
+    await main.ev(`(async()=>{
+      const ctx=window.__h2BasesRegression;if(!ctx)return 1;
+      try {
+        if(ctx.side)ctx.side.detach();
+        await ctx.leaf.setViewState(ctx.state);
+        app.workspace.setActiveLeaf(ctx.leaf,{focus:true});
+      } finally {
+        app.changeTheme(ctx.theme);
+        delete window.__h2BasesRegression;
+      }
+      return 1;
+    })()`);
+    await sleep(700);
+  }
+}
+
 // ── 5. 右栏收起后，视图切换钮仍在右下角 ───────────────────────────────────
 {
   await main.ev(`app.workspace.rightSplit.collapse(); 1`); await sleep(900);

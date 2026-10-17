@@ -3317,6 +3317,32 @@ body:not(.is-mobile) .workspace-split.mod-root *::-webkit-scrollbar,
   height: 0;
 }
 
+/* Bases 宽表格需要横向滑块供鼠标拖动；正文与侧栏的纵向条仍隐藏。 */
+body:not(.is-mobile) .workspace-split.mod-sidedock .bases-view[data-view-type="table"],
+body:not(.is-mobile) .workspace-split.mod-root .bases-view[data-view-type="table"] {
+  scrollbar-width: auto;
+  /* 原生 scrollbar-color 会优先于 WebKit 几何样式，回退为 auto 才能保持直角。 */
+  scrollbar-color: auto;
+
+  &::-webkit-scrollbar {
+    display: block;
+    width: 0;
+    height: var(--scrollbar-height);
+    background-color: var(--scrollbar-bg);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-thumb-bg);
+    border: 0;
+    border-radius: var(--scrollbar-radius);
+  }
+
+  &::-webkit-scrollbar-thumb:hover,
+  &::-webkit-scrollbar-thumb:active {
+    background-color: var(--scrollbar-active-thumb-bg);
+  }
+}
+
 /* 侧栏顶部功能区：默认收纳为三个方点，hover/focus 时变红并展开。
    左右共用完全相同的高度与动画，延续前两作的自动隐藏交互，
    但将胶囊提示条翻译成 H2 OS 的“方 = 结构”记号。 */
