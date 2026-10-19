@@ -73,10 +73,32 @@ const guideJs = (sel) => `(()=>{const root=document.querySelector(${JSON.stringi
 }
 
 // ── 2. 属性区左缘 = 标题左缘（Obsidian 原生有 translateX(-4px)，被压掉过一次）──
+// 量 .metadata-properties（内容）而不是容器：固定的属性栏容器左伸 4px 给聚焦环留位，内容左缘才是要对齐的。
 for (const mode of ['live', 'preview']) {
   await open('Everything.md', mode);
-  const r = await main.ev(`(()=>{const v=document.querySelector('.workspace-leaf.mod-active '+${JSON.stringify(mode === 'live' ? '.markdown-source-view' : '.markdown-preview-view')});if(!v)return null;const m=v.querySelector('.metadata-container'),t=v.querySelector('.inline-title');if(!m||!t)return null;return {m:m.getBoundingClientRect().left,t:t.getBoundingClientRect().left}})()`);
+  const r = await main.ev(`(()=>{const v=document.querySelector('.workspace-leaf.mod-active '+${JSON.stringify(mode === 'live' ? '.markdown-source-view' : '.markdown-preview-view')});if(!v)return null;const m=v.querySelector('.metadata-properties'),t=v.querySelector('.inline-title');if(!m||!t)return null;return {m:m.getBoundingClientRect().left,t:t.getBoundingClientRect().left}})()`);
   check(`属性区左缘对齐标题（${mode}）`, !!r && Math.abs(r.m - r.t) <= 1, JSON.stringify(r));
+}
+
+// ── 2b. 页边图谱：实时预览滚下去后属性栏仍在视口里（sticky）；h2-atlas-scroll 撤掉固定 ──
+// 阅读模式不测：Obsidian 滚过约 1000px 会卸载属性区，固定不了，主题里也没写规则。
+// 双列要容器 ≥ 1040px：窗口放到 1700 并收起两侧栏（同 3c）。
+{
+  await main.send('Emulation.setDeviceMetricsOverride', { width: 1700, height: 900, deviceScaleFactor: 1, mobile: false });
+  await main.ev(`app.workspace.leftSplit.collapse(); app.workspace.rightSplit.collapse(); 1`); await sleep(500);
+  await open('Other.md', 'live');
+  await open('Everything.md', 'live');
+  const probe = () => main.ev(`(async()=>{const L=document.querySelector('.workspace-leaf.mod-active');const sc=L.querySelector('.markdown-source-view .cm-scroller');const m=L.querySelector('.metadata-container');if(!sc||!m)return null;
+    sc.scrollTop=800;await new Promise(r=>setTimeout(r,400));const r=m.getBoundingClientRect(),s=sc.getBoundingClientRect();
+    const o={pos:getComputedStyle(m).position,top:Math.round(r.top),bottom:Math.round(r.bottom),sTop:Math.round(s.top),sBottom:Math.round(s.bottom)};sc.scrollTop=0;await new Promise(r=>setTimeout(r,200));return o})()`);
+  const pinned = await probe();
+  check('页边图谱：实时预览滚动后属性栏仍在视口内', !!pinned && pinned.pos === 'sticky' && pinned.top >= pinned.sTop && pinned.bottom <= pinned.sBottom, JSON.stringify(pinned));
+  await main.ev(`document.body.classList.add('h2-atlas-scroll'); 1`); await sleep(250);
+  const away = await probe();
+  await main.ev(`document.body.classList.remove('h2-atlas-scroll'); 1`); await sleep(250);
+  check('页边图谱：h2-atlas-scroll 开启后属性栏随页滚走', !!away && away.pos !== 'sticky' && away.top < away.sTop, JSON.stringify(away));
+  await main.send('Emulation.setDeviceMetricsOverride', { width: 1440, height: 900, deviceScaleFactor: 1, mobile: false });
+  await main.ev(`app.workspace.leftSplit.expand(); app.workspace.rightSplit.expand(); 1`); await sleep(300);
 }
 
 // ── 3. 实时预览与阅读模式的标题颜色一致 ───────────────────────────────────

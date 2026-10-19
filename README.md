@@ -58,7 +58,7 @@ Discipline governs the constant; delight lives in events. The interface holds st
 
 H2 OS ships a configuration for the [Style Settings](https://github.com/mgmeyers/obsidian-style-settings) plugin. Install it if you want to adjust:
 
-- **Layout**: keep properties on top (turn off Margin Atlas), the width of the left column, the paper grain.
+- **Layout**: Margin Atlas, the side column that holds a note's properties on wide panes — turn it off to keep properties on top, let it scroll away with the page (by default it stays in view in Live Preview), set its width; plus the paper grain.
 - **Title line and dividers**: hide the line under titles, solid lines instead of three segments, hide the red lead-in.
 - **Typography**: title size, inline-title and heading 1 weight, size and weight of headings 2–6, heading font, body line height.
 

@@ -22,18 +22,32 @@ settings:
     level: 1
     collapsed: true
   -
+    id: h2-margin-atlas-info
+    title: Margin Atlas = note properties in a side column
+    title.zh: 页边图谱 = 笔记属性分栏
+    description: When the editor pane is wide (about 1040px or more), a note's properties (frontmatter) move into a column to the left of the text. In Live Preview that column stays in view while you scroll. The three options below only affect this column.
+    description.zh: 编辑区够宽时（约 1040px 以上），笔记的属性（frontmatter）会移到正文左侧的一栏；在实时预览中，滚动正文时这一栏会固定在原处。下面三项只控制这一栏。
+    type: info-text
+  -
     id: h2-no-margin-atlas
-    title: Keep properties on top
-    title.zh: 属性固定在顶部
-    description: Turns off Margin Atlas, the two-column layout that moves properties to the left on wide panes.
-    description.zh: 关闭页边图谱：宽屏下不再把笔记属性移到左侧。
+    title: Margin Atlas · off, keep properties on top
+    title.zh: 页边图谱 · 关闭，属性放回顶部
+    description: Properties stay above the text at full width, as on a narrow pane.
+    description.zh: 宽屏下也不分栏，笔记属性留在标题下方、与正文同宽，和窄屏时一样。
+    type: class-toggle
+  -
+    id: h2-atlas-scroll
+    title: Margin Atlas · let the column scroll away
+    title.zh: 页边图谱 · 属性栏随页面滚走
+    description: By default the properties column stays in view in Live Preview. Turn this on to let it scroll away with the page. Reading view always scrolls away.
+    description.zh: 默认在实时预览中属性栏固定不动；打开后改为随页面一起滚走。阅读视图本来就是随页滚走。
     type: class-toggle
   -
     id: h2-margin-ratio
-    title: Margin Atlas · left column width (%)
-    title.zh: 页边图谱 · 左列宽度（%）
-    description: Share of the page width given to properties. Only applies to the two-column layout.
-    description.zh: 属性列占页面宽度的比例，只在双列布局下生效。
+    title: Margin Atlas · properties column width (%)
+    title.zh: 页边图谱 · 属性栏宽度（%）
+    description: Share of the page width given to the properties column. Only applies when Margin Atlas is on.
+    description.zh: 属性栏占页面宽度的比例，只在页边图谱开启时生效。
     type: variable-number-slider
     default: 35
     min: 25
@@ -5545,6 +5559,23 @@ body { --h2-margin-ratio: 35%; --h2-margin-half-gap: 24px; }
     border-right: 1px solid var(--h2-border);
     border-radius: 0;
   }
+  /* 属性栏随页面固定（仅实时预览）：属性栏只有一屏高，滚下去后左侧整片留白；sticky 让它跟着视口走，不改布局。
+     属性多到超过一屏时，max-height + 内部滚动保证最后一行也够得着。
+     overflow 会把横向也裁掉，聚焦环左缘（约 2px）会被切成直角；容器左伸 4px、内补 4px，内容左缘不动。
+     阅读模式不固定——试过（.mod-header 设 display: contents 让 sticky 有路可走），无效：
+     Obsidian 阅读视图会在滚过约 1000px 后卸载首段（属性区 DOM 清空），固定的栏会在半途凭空消失，
+     比随页滚走更糟。所以阅读模式保持原样。 */
+  & body:not(.h2-no-margin-atlas):not(.h2-atlas-scroll) .markdown-source-view.mod-cm6.is-live-preview .cm-sizer > .metadata-container:has(.metadata-property) {
+    position: sticky;
+    top: 24px;
+    margin-left: -4px;
+    padding-left: 4px;
+    width: calc(var(--h2-margin-ratio) - var(--h2-margin-half-gap) + 4px);
+    max-height: calc(100vh - 160px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
   & body:not(.h2-no-margin-atlas) .markdown-source-view.mod-cm6.is-live-preview .cm-sizer:has(> .metadata-container .metadata-property) > :is(.cm-contentContainer, .embedded-backlinks),
   & body:not(.h2-no-margin-atlas) .markdown-preview-view .markdown-preview-sizer:has(> .mod-header .metadata-property) > :not(.mod-header):not(.markdown-preview-pusher) {
     margin-inline-start: calc(var(--h2-margin-ratio) + var(--h2-margin-half-gap));
@@ -5783,7 +5814,8 @@ body :is(button, .clickable-icon, .workspace-tab-header, .tree-item-self, .menu-
    · 数值类设置走 --h2-set-* 变量（见 TOKENS 注释），默认不定义；
      只有 --h2-margin-ratio / --h2-line-height-body 直接写 token——
      它们只在 body 单一特异性层定义，Style Settings 的 body.css-settings-manager 必然压过。
-   · 页边图谱开关在 @container 1040px 块内（选择器带 body:not(.h2-no-margin-atlas)）。
+   · 页边图谱开关在 @container 1040px 块内（选择器带 body:not(.h2-no-margin-atlas)）；
+     「属性栏随页面滚走」h2-atlas-scroll 同在该块内，用 :not(.h2-atlas-scroll) 撤掉 sticky。
    ════════════════════════════════════════════════════════════ */
 
 /* 纸感噪点（亮/暗各一份，需同时压过 body.theme-light::after / body.theme-dark::after） */
