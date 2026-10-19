@@ -15,6 +15,18 @@ name: H2 OS
 id: h2os
 settings:
   -
+    id: h2os-language-note
+    title: Language / 语言
+    title.zh: 语言
+    description: |-
+      Names and descriptions here follow the language **saved** in Obsidian, not your system language. If Obsidian is in Chinese but this page is in English: open **Settings → About → Language** (设置 → 关于 → 语言), pick another language and click **Relaunch** (重新启动应用), then pick 简体中文 and click **Relaunch** again.
+
+      这里的设置名称和说明，跟随 Obsidian 里**已保存**的语言，而不是系统语言。界面是中文却显示英文：请打开 **设置 → 关于 → 语言**，先选别的语言并点「重新启动应用」，再选回「简体中文」并再次点「重新启动应用」。
+    description.zh: |-
+      这里已按 Obsidian 里保存的语言显示中文。若某台设备上显示的是英文：打开 **设置 → 关于 → 语言**，先选别的语言并点「重新启动应用」，再选回「简体中文」并再次点「重新启动应用」。
+    type: info-text
+    markdown: true
+  -
     id: h2os-heading-layout
     title: Layout
     title.zh: 版面
@@ -2120,6 +2132,20 @@ body.show-inline-title .markdown-source-view.mod-cm6 .cm-line.HyperMD-header-1::
 
 .workspace .mod-root .workspace-tabs:not(.mod-stacked) .workspace-tab-header.is-active::before,
 .workspace .mod-root .workspace-tabs:not(.mod-stacked) .workspace-tab-header.is-active::after {
+  display: none !important;
+}
+
+/* 非 active tab 悬停：官方在外层 header 上画底部内阴影线（inset 0 -1px 1px divider）
+   和 ::before/::after 两个圆角脚，叠在 H2 OS 的灰底 pill 外面成了几条浅浅的外围线。
+   和上面 active 同理关掉，只留 pill。实测 asar app.css 7002-7018。
+   侧栏图标 tab 吃同一条官方规则（底部那条内阴影线），一并关掉；它们的伪元素官方本就隐藏。 */
+.workspace .mod-root .workspace-tabs:not(.mod-stacked) .workspace-tab-header:not(.is-active):hover,
+.workspace-split.mod-sidedock .workspace-tabs .workspace-tab-header:not(.is-active):hover {
+  box-shadow: none !important;
+}
+
+.workspace .mod-root .workspace-tabs:not(.mod-stacked) .workspace-tab-header:not(.is-active):hover::before,
+.workspace .mod-root .workspace-tabs:not(.mod-stacked) .workspace-tab-header:not(.is-active):hover::after {
   display: none !important;
 }
 

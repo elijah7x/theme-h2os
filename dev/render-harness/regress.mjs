@@ -101,6 +101,28 @@ for (const mode of ['live', 'preview']) {
   await main.ev(`app.workspace.leftSplit.expand(); app.workspace.rightSplit.expand(); 1`); await sleep(300);
 }
 
+// ── 2c. 非 active tab 悬停：官方画在外层 header 上的底部内阴影线和圆角脚要关掉，只留 pill ──
+// 官方规则 app.css 7002-7018；用 CDP 强制 :hover，不依赖真实鼠标（鼠标悬停的渲染不稳）。
+{
+  await main.ev(`(async()=>{const f=app.workspace.getLeaf(false);await f.openFile(app.vault.getAbstractFileByPath('Everything.md'));app.workspace.setActiveLeaf(f,{focus:true});const l=app.workspace.getLeaf('tab');await l.openFile(app.vault.getAbstractFileByPath('Other.md'));app.workspace.setActiveLeaf(f,{focus:true});await new Promise(r=>setTimeout(r,500));return 1})()`);
+  await main.send('DOM.enable'); await main.send('CSS.enable');
+  const hoverProbe = async (sel) => {
+    await main.ev(`document.querySelectorAll('[data-h2probe]').forEach(e=>e.removeAttribute('data-h2probe')); [...document.querySelectorAll(${JSON.stringify(sel)})].find(x=>!x.classList.contains('is-active')&&x.getBoundingClientRect().width>0)?.setAttribute('data-h2probe','1'); 1`);
+    const doc = await main.send('DOM.getDocument', { depth: 0 });
+    const q = await main.send('DOM.querySelector', { nodeId: doc.result.root.nodeId, selector: '[data-h2probe="1"]' });
+    if (!q.result.nodeId) return null;
+    await main.send('CSS.forcePseudoState', { nodeId: q.result.nodeId, forcedPseudoClasses: ['hover'] });
+    await sleep(400);
+    const r = await main.ev(`(()=>{const h=document.querySelector('[data-h2probe="1"]');const g=(p)=>getComputedStyle(h,p);return {shadow:g().boxShadow,before:g('::before').display,after:g('::after').display}})()`);
+    await main.send('CSS.forcePseudoState', { nodeId: q.result.nodeId, forcedPseudoClasses: [] });
+    await main.ev(`document.querySelector('[data-h2probe]')?.removeAttribute('data-h2probe'); 1`);
+    return r;
+  };
+  const rootTab = await hoverProbe('.mod-root .workspace-tab-header');
+  const sideTab = await hoverProbe('.workspace-split.mod-left-split .workspace-tab-header');
+  check('tab 悬停：无官方外层内阴影线与圆角脚（主区 / 侧栏）', !!rootTab && !!sideTab && rootTab.shadow === 'none' && rootTab.before === 'none' && rootTab.after === 'none' && sideTab.shadow === 'none', JSON.stringify({ rootTab, sideTab }));
+}
+
 // ── 3. 实时预览与阅读模式的标题颜色一致 ───────────────────────────────────
 {
   await open('Everything.md', 'live');
