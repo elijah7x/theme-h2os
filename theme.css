@@ -5580,6 +5580,26 @@ body { --h2-margin-ratio: 35%; --h2-margin-half-gap: 24px; }
   & .workspace-leaf-content[data-type="markdown"] .markdown-preview-sizer { background: transparent; border: 0; box-shadow: none; padding: 0; }
 }
 
+/* ════════════════════════════════════════════════════════════
+   MOBILE · 手机正文铺满（body.is-phone，asar 实测存在）
+   ════════════════════════════════════════════════════════════
+   桌面"桌面垫一张纸"的外框在手机上吃掉每侧 57px（32 桌面边 + 1 hairline +
+   24 纸内边），375–390pt 屏正文只剩 ~276px。手机端取消外框：纸色铺满
+   scroller，左右只留 16px（4px 网格）。平板（is-tablet）保持桌面构图。
+   容器查询里的 padding: 24px !important 特异性低于本段，不用顺序抢。
+   横屏刘海：max() 躲安全区；Obsidian 编辑区自身是否已避让未实测，需真机确认。 */
+body.is-phone .workspace-leaf-content[data-type="markdown"] .markdown-source-view.mod-cm6 .cm-scroller,
+body.is-phone .workspace-leaf-content[data-type="markdown"] .markdown-preview-view {
+  background-color: var(--h2-paper);
+  padding: 0;
+}
+body.is-phone .workspace-leaf-content[data-type="markdown"] .cm-sizer,
+body.is-phone .workspace-leaf-content[data-type="markdown"] .markdown-preview-sizer {
+  border-width: 0;
+  box-shadow: none;
+  padding: 24px max(16px, var(--safe-area-inset-right, 0px)) 24px max(16px, var(--safe-area-inset-left, 0px)) !important;
+}
+
 /* Insert after existing W4 + Delight and DARK MODE rules. Real 1.14.4 DOM probed.
    Defaults work without linear(); enhancements only alter transform/opacity.
    Geometry, final checked colors and existing accessibility states stay native. */
