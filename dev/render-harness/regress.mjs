@@ -123,6 +123,27 @@ for (const mode of ['live', 'preview']) {
   check('tab 悬停：无官方外层内阴影线与圆角脚（主区 / 侧栏）', !!rootTab && !!sideTab && rootTab.shadow === 'none' && rootTab.before === 'none' && rootTab.after === 'none' && sideTab.shadow === 'none', JSON.stringify({ rootTab, sideTab }));
 }
 
+// ── 2d. 文件树重命名（issue #3）：全选后在选区里拖动不能变成拖文件——行须 -webkit-user-drag: none（Blink 找不到可拖祖先才退回选字）；
+//        按住时也不缩放/变淡。普通行仍可拖、有按压反馈。CDP 模拟鼠标起不了真实拖拽，只能量样式。
+{
+  await main.ev(`app.workspace.leftSplit.expand(); 1`); await sleep(300);
+  const pressProbe = async (rename) => {
+    await main.ev(`(async()=>{const fe=app.workspace.getLeavesOfType('file-explorer')[0].view;const f=app.vault.getAbstractFileByPath('Other.md');await fe.revealInFolder(f);if(${rename})await fe.startRenameFile(f);await new Promise(r=>setTimeout(r,400));return 1})()`);
+    const r = await main.ev(`(()=>{const s=${rename}?document.querySelector('.is-being-renamed [contenteditable]'):[...document.querySelectorAll('.workspace-leaf-content[data-type=file-explorer] .nav-file-title')].find(e=>!e.classList.contains('is-being-renamed'));if(!s)return null;const b=s.getBoundingClientRect();return {x:b.x+4,y:b.y+b.height/2}})()`);
+    if (!r) return null;
+    await main.send('Input.dispatchMouseEvent', { type: 'mousePressed', x: r.x, y: r.y, button: 'left', clickCount: 1 });
+    await sleep(250);
+    const st = await main.ev(`(()=>{const s=document.querySelector(':is(.tree-item-self):active');if(!s)return null;const g=getComputedStyle(s);return {renaming:s.classList.contains('is-being-renamed'),transform:g.transform,opacity:g.opacity,drag:g.webkitUserDrag}})()`);
+    await main.send('Input.dispatchMouseEvent', { type: 'mouseReleased', x: r.x, y: r.y, button: 'left', clickCount: 1 });
+    await main.ev(`(async()=>{const el=document.querySelector('.is-being-renamed [contenteditable]');if(el){el.blur();}await new Promise(r=>setTimeout(r,300));return 1})()`);
+    return st;
+  };
+  const ren = await pressProbe(true);
+  const plain = await pressProbe(false);
+  check('文件树重命名：行不可拖（拖选文字不会变成拖文件）、按住时不缩放不变淡；普通行仍可拖、有按压反馈', !!ren && ren.renaming && ren.drag === 'none' && ren.transform === 'none' && ren.opacity === '1' && !!plain && plain.drag === 'element' && plain.transform !== 'none',
+    JSON.stringify({ ren, plain }));
+}
+
 // ── 3. 实时预览与阅读模式的标题颜色一致 ───────────────────────────────────
 {
   await open('Everything.md', 'live');

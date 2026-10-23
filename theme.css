@@ -2849,7 +2849,7 @@ body .modal .checkbox-container:focus-visible {
    点击到动作落地之间零确认。opacity 瞬时变化，不加过渡（按下要即时）。
    官方只给 .clickable-icon 和页签图标写了 :active（asar 7278/8368）。 */
 .workspace-tab-header:active,
-.tree-item-self:active,
+.tree-item-self:not(.is-being-renamed):active,
 .clickable-icon:active,
 .menu-item:active {
   opacity: 0.6;
@@ -5798,7 +5798,17 @@ body :is(button, .clickable-icon, .workspace-tab-header, .tree-item-self, .menu-
   transform-origin: center;
 }
 
-body :is(button, .clickable-icon, .workspace-tab-header, .tree-item-self, .menu-item, .suggestion-item):not(:disabled):not([aria-disabled="true"]):active {
+/* 重命名时拖选文字不能变成拖文件（issue #3）。行带 draggable="true"，UA 样式给它
+   -webkit-user-drag: element；重命名一开始就全选，在选区里按下再拖，Blink 的
+   DragController::DraggableNode 找到这个可拖祖先，就把整行（文件）拖走。
+   改为 none 后 Blink 跳过它、找不到可拖祖先，按源码注释退回"从光标处开始选文字"。
+   按住超过约 150ms 再拖仍是拖走选中文字——这是文本框的通用行为，CSS 管不到。 */
+.tree-item-self.is-being-renamed {
+  -webkit-user-drag: none;
+}
+
+/* 重命名中的文件树行不做按压反馈：行在光标下缩小下移，拖选文字会落空并出现重影（issue #3）。 */
+body :is(button, .clickable-icon, .workspace-tab-header, .tree-item-self, .menu-item, .suggestion-item):not(:disabled):not([aria-disabled="true"]):not(.is-being-renamed):active {
   transform: translateY(2px) scale(.98);
   opacity: .96;
   transition-duration: var(--h2-duration-touch);
